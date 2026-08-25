@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "example.com/work-demo/common/kitex_gen/user";
+
+service UserService {
+  rpc GetUserName(GetUserNameRequest) returns (GetUserNameResponse);
+}
+
+message GetUserNameRequest {
+  int64 user_id = 1;
+}
+
+message GetUserNameResponse {
+  string name = 1;
+}
