@@ -6,6 +6,7 @@ require (
 	example.com/work-demo/common v0.0.0
 	github.com/cloudwego/hertz v0.10.6
 	github.com/cloudwego/kitex v0.16.3
+	google.golang.org/protobuf v1.34.1
 )
 
 require (
@@ -46,7 +47,6 @@ require (
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384 // indirect
-	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
