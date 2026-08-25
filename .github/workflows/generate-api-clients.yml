@@ -72,7 +72,7 @@ jobs:
 
       - name: commit generated code
         run: |
-          if git diff --quiet -- api; then
+          if [ -z "$(git status --porcelain --untracked-files=all -- api)" ]; then
             echo "no generated changes"
             exit 0
           fi
