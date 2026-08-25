@@ -36,7 +36,7 @@ jobs:
       - name: setup swift
         uses: swift-actions/setup-swift@v2
         with:
-          swift-version: "6.0"
+          swift-version: "6.2"
 
       - name: setup java
         uses: actions/setup-java@v4
