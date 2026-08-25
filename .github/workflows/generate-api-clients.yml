@@ -1,7 +1,6 @@
 name: generate api clients
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
@@ -15,17 +14,18 @@ permissions:
 
 concurrency:
   group: generate-api-clients-main
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   generate:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
 
       - name: setup protoc
         run: |
@@ -80,4 +80,5 @@ jobs:
           git config user.email "github-actions[bot]@github.com"
           git add api
           git commit -m "init"
+          git pull --rebase origin main
           git push origin HEAD:main
