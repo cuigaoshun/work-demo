@@ -5,9 +5,12 @@ package user
 import (
 	"context"
 
-	user "example.com/work-demo/hertz/biz/model/user"
+	kitexuser "example.com/work-demo/common/kitex_gen/user"
+	"example.com/work-demo/hertz/biz/model/user"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"github.com/cloudwego/kitex/pkg/kerrors"
 )
 
 // GetUserName .
@@ -21,7 +24,15 @@ func GetUserName(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	resp := new(user.GetUserNameResponse)
+	rpcResp, err := rpcClient.GetUserName(ctx, &kitexuser.GetUserNameRequest{UserId: req.GetUserId()})
+	if err != nil {
+		if bizErr, ok := kerrors.FromBizStatusError(err); ok {
+			c.JSON(int(bizErr.BizStatusCode()), utils.H{"error": bizErr.BizMessage()})
+			return
+		}
+		c.JSON(consts.StatusInternalServerError, utils.H{"error": err.Error()})
+		return
+	}
 
-	c.JSON(consts.StatusOK, resp)
+	c.JSON(consts.StatusOK, &user.GetUserNameResponse{Name: rpcResp.GetName()})
 }
