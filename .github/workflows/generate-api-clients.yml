@@ -20,7 +20,7 @@ concurrency:
 jobs:
   generate:
     if: github.actor != 'github-actions[bot]'
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -28,9 +28,15 @@ jobs:
           fetch-depth: 0
 
       - name: setup protoc
-        uses: arduino/setup-protoc@v3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+          protoc --version
+
+      - name: setup swift
+        uses: swift-actions/setup-swift@v2
         with:
-          version: "3.21.12"
+          swift-version: "6.0"
 
       - name: setup java
         uses: actions/setup-java@v4
@@ -42,12 +48,16 @@ jobs:
         uses: dart-lang/setup-dart@v1
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "24"
 
       - name: install swift plugin
-        run: brew install swift-protobuf
+        run: |
+          git clone --depth=1 https://github.com/apple/swift-protobuf.git /tmp/swift-protobuf
+          cd /tmp/swift-protobuf
+          swift build -c release
+          sudo cp .build/release/protoc-gen-swift /usr/local/bin/
 
       - name: install dart plugin
         run: |
