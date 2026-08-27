@@ -24,3 +24,5 @@
 thrift_streaming/output
 common/kitex_gen/
 kitex/internal/dal/query/
+
+*.iml

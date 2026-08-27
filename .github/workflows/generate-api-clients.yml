@@ -64,8 +64,8 @@ jobs:
           dart pub global activate protoc_plugin
           echo "$HOME/.pub-cache/bin" >> "$GITHUB_PATH"
 
-      - name: install arkts plugin
-        run: npm install -g @larkoh/protoc-gen-ets
+      - name: install ts-proto plugin
+        run: npm install -g ts-proto
 
       - name: generate api clients
         run: make gen-api-clients
