@@ -3,7 +3,7 @@
 package router
 
 import (
-	user "example.com/work-demo/hertz/biz/router/user"
+	user "example.com/work-demo/hertz/biz/router/test"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 

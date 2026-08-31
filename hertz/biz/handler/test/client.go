@@ -1,7 +1,7 @@
-package user
+package test
 
 import (
-	userservice "example.com/work-demo/common/kitex_gen/user/userservice"
+	userservice "example.com/work-demo/common/kitex_gen/user/testservice"
 	kitexclient "github.com/cloudwego/kitex/client"
 )
 

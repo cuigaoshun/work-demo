@@ -7,7 +7,7 @@
 KITEX ?= $(shell go env GOPATH)/bin/kitex
 PROTOC ?= protoc
 PROTO_API_DIR ?= api
-API_PROTO_FILES ?= api.proto user_http.proto
+API_PROTO_FILES ?= api.proto test_http.proto
 API_OUT_BASE ?= generated
 PROTOC_GEN_DART ?= $(shell command -v protoc-gen-dart 2>/dev/null)
 PROTOC_GEN_SWIFT ?= $(shell command -v protoc-gen-swift 2>/dev/null)
@@ -16,7 +16,7 @@ PROTOC_GEN_TS_PROTO ?= $(shell command -v protoc-gen-ts_proto 2>/dev/null)
 gen: gen-kitex gen-ent
 
 gen-kitex:
-	cd common && $(KITEX) -module example.com/work-demo/common -gen-path kitex_gen -I ../proto ../proto/user.proto
+	cd common && $(KITEX) -module example.com/work-demo/common -gen-path kitex_gen -I ../proto ../proto/test.proto
 
 gen-ent:
 	cd kitex && go run ./cmd/entgen

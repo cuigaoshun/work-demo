@@ -2,14 +2,12 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "example.com/work-demo/common/kitex_gen/user";
+option go_package = "example.com/work-demo/hertz/biz/model/test";
 
-service UserService {
-  rpc GetUserName(GetUserNameRequest) returns (GetUserNameResponse);
-}
+import "api.proto";
 
-message GetUserNameRequest {
-  int64 user_id = 1;
+message TestFieldsRequest {
+  int64 user_id = 1 [(api.path) = "id"];
 
   // 兼容性测试字段：覆盖常用标量、枚举、数组、映射和嵌套消息。
   int32 int32_value = 4; // 有符号 32 位整数。
@@ -29,9 +27,7 @@ message GetUserNameRequest {
   map<string, CompatibilityMessage> nested_map = 25; // 嵌套消息映射。
 }
 
-message GetUserNameResponse {
-  string name = 1;
-
+message TestFieldsResponse {
   // 以下字段与请求保持一致，用于验证字段兼容性。
   int32 int32_value = 4; // 回传有符号 32 位整数。
   uint32 uint32_value = 5; // 回传无符号 32 位整数。
@@ -50,6 +46,7 @@ message GetUserNameResponse {
   map<string, CompatibilityMessage> nested_map = 25; // 回传嵌套消息映射。
 }
 
+// CompatibilityEnum 用于测试 protobuf 枚举编码。
 enum CompatibilityEnum {
   COMPATIBILITY_ENUM_UNSPECIFIED = 0;
   COMPATIBILITY_ENUM_FIRST = 1;
@@ -62,4 +59,10 @@ message CompatibilityMessage {
   repeated int64 values = 2; // 64 位整数数组。
   map<string, int32> attributes = 3; // 字符串到整数映射。
   CompatibilityMessage child = 4; // 递归嵌套消息。
+}
+
+service TestService {
+  rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse) {
+  option (api.post) = "/test-fields/:id";
+  }
 }
