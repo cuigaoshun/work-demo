@@ -2,30 +2,25 @@ name: generate api clients
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - "api/*.proto"
-      - "Makefile"
-      - ".github/workflows/generate-api-clients.yml"
+    tags:
+      - "*"
 
 permissions:
   contents: write
 
 concurrency:
-  group: generate-api-clients-main
+  group: generate-api-clients-realese
   cancel-in-progress: true
 
 jobs:
   generate:
-    if: github.actor != 'github-actions[bot]' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: main
+          ref: ${{ github.sha }}
 
       - name: setup protoc
         run: |
@@ -72,6 +67,21 @@ jobs:
 
       - name: commit generated code
         run: |
+          git fetch origin realese || true
+          if git show-ref --verify --quiet refs/remotes/origin/realese; then
+            git worktree add /tmp/realese origin/realese
+          else
+            git worktree add -b realese /tmp/realese "${{ github.sha }}"
+          fi
+
+          rsync -a --delete api/flutter/ /tmp/realese/api/flutter/
+          rsync -a --delete api/objc/ /tmp/realese/api/objc/
+          rsync -a --delete api/swift/ /tmp/realese/api/swift/
+          rsync -a --delete api/java/ /tmp/realese/api/java/
+          rsync -a --delete api/typescript/ /tmp/realese/api/typescript/
+          rsync -a --delete api/cpp/ /tmp/realese/api/cpp/
+
+          cd /tmp/realese
           if [ -z "$(git status --porcelain --untracked-files=all -- api)" ]; then
             echo "no generated changes"
             exit 0
@@ -79,6 +89,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@github.com"
           git add api
-          git commit -m "init"
-          git pull --rebase origin main
-          git push origin HEAD:main
+          git commit -m "generate API clients for ${{ github.ref_name }}"
+          git push origin HEAD:realese
