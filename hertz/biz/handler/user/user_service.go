@@ -14,7 +14,7 @@ import (
 )
 
 // GetUserName .
-// @router /users/:id [GET]
+// @router /users/:id [POST]
 func GetUserName(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req user.GetUserNameRequest
@@ -24,7 +24,24 @@ func GetUserName(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	rpcResp, err := rpcClient.GetUserName(ctx, &kitexuser.GetUserNameRequest{UserId: req.GetUserId()})
+	rpcResp, err := rpcClient.GetUserName(ctx, &kitexuser.GetUserNameRequest{
+		UserId:          req.GetUserId(),
+		Int32Value:      req.GetInt32Value(),
+		Uint32Value:     req.GetUint32Value(),
+		Int64Value:      req.GetInt64Value(),
+		Uint64Value:     req.GetUint64Value(),
+		BoolValue:       req.GetBoolValue(),
+		StringValue:     req.GetStringValue(),
+		EnumValue:       kitexuser.CompatibilityEnum(req.GetEnumValue()),
+		NestedValue:     toKitexNested(req.GetNestedValue()),
+		RepeatedStrings: req.GetRepeatedStrings(),
+		RepeatedInt32:   req.GetRepeatedInt32(),
+		RepeatedEnums:   convertEnums(req.GetRepeatedEnums()),
+		RepeatedNested:  convertNested(req.GetRepeatedNested()),
+		StringMap:       req.GetStringMap(),
+		NumericMap:      req.GetNumericMap(),
+		NestedMap:       convertNestedMap(req.GetNestedMap()),
+	})
 	if err != nil {
 		if bizErr, ok := kerrors.FromBizStatusError(err); ok {
 			c.JSON(int(bizErr.BizStatusCode()), utils.H{"error": bizErr.BizMessage()})
@@ -34,5 +51,84 @@ func GetUserName(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	c.JSON(consts.StatusOK, &user.GetUserNameResponse{Name: rpcResp.GetName()})
+	c.JSON(consts.StatusOK, &user.GetUserNameResponse{
+		Name:            rpcResp.GetName(),
+		Int32Value:      rpcResp.GetInt32Value(),
+		Uint32Value:     rpcResp.GetUint32Value(),
+		Int64Value:      rpcResp.GetInt64Value(),
+		Uint64Value:     rpcResp.GetUint64Value(),
+		BoolValue:       rpcResp.GetBoolValue(),
+		StringValue:     rpcResp.GetStringValue(),
+		EnumValue:       user.CompatibilityEnum(rpcResp.GetEnumValue()),
+		NestedValue:     toHTTPNested(rpcResp.GetNestedValue()),
+		RepeatedStrings: rpcResp.GetRepeatedStrings(),
+		RepeatedInt32:   rpcResp.GetRepeatedInt32(),
+		RepeatedEnums:   convertHTTPEnums(rpcResp.GetRepeatedEnums()),
+		RepeatedNested:  convertHTTPNested(rpcResp.GetRepeatedNested()),
+		StringMap:       rpcResp.GetStringMap(),
+		NumericMap:      rpcResp.GetNumericMap(),
+		NestedMap:       convertHTTPNestedMap(rpcResp.GetNestedMap()),
+	})
+}
+
+func convertEnums(values []user.CompatibilityEnum) []kitexuser.CompatibilityEnum {
+	result := make([]kitexuser.CompatibilityEnum, len(values))
+	for i, value := range values {
+		result[i] = kitexuser.CompatibilityEnum(value)
+	}
+	return result
+}
+
+func convertNested(value []*user.CompatibilityMessage) []*kitexuser.CompatibilityMessage {
+	result := make([]*kitexuser.CompatibilityMessage, len(value))
+	for i, item := range value {
+		result[i] = toKitexNested(item)
+	}
+	return result
+}
+
+func convertNestedMap(value map[string]*user.CompatibilityMessage) map[string]*kitexuser.CompatibilityMessage {
+	result := make(map[string]*kitexuser.CompatibilityMessage, len(value))
+	for key, item := range value {
+		result[key] = toKitexNested(item)
+	}
+	return result
+}
+
+func convertHTTPEnums(values []kitexuser.CompatibilityEnum) []user.CompatibilityEnum {
+	result := make([]user.CompatibilityEnum, len(values))
+	for i, value := range values {
+		result[i] = user.CompatibilityEnum(value)
+	}
+	return result
+}
+
+func convertHTTPNested(value []*kitexuser.CompatibilityMessage) []*user.CompatibilityMessage {
+	result := make([]*user.CompatibilityMessage, len(value))
+	for i, item := range value {
+		result[i] = toHTTPNested(item)
+	}
+	return result
+}
+
+func convertHTTPNestedMap(value map[string]*kitexuser.CompatibilityMessage) map[string]*user.CompatibilityMessage {
+	result := make(map[string]*user.CompatibilityMessage, len(value))
+	for key, item := range value {
+		result[key] = toHTTPNested(item)
+	}
+	return result
+}
+
+func toKitexNested(value *user.CompatibilityMessage) *kitexuser.CompatibilityMessage {
+	if value == nil {
+		return nil
+	}
+	return &kitexuser.CompatibilityMessage{Label: value.Label, Values: value.Values, Attributes: value.Attributes, Child: toKitexNested(value.Child)}
+}
+
+func toHTTPNested(value *kitexuser.CompatibilityMessage) *user.CompatibilityMessage {
+	if value == nil {
+		return nil
+	}
+	return &user.CompatibilityMessage{Label: value.Label, Values: value.Values, Attributes: value.Attributes, Child: toHTTPNested(value.Child)}
 }

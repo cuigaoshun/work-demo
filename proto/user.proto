@@ -10,8 +10,56 @@ service UserService {
 
 message GetUserNameRequest {
   int64 user_id = 1;
+
+  // Compatibility test fields: scalar, enum, bytes, repeated, map, and nested values.
+  int32 int32_value = 4; // signed 32-bit integer.
+  uint32 uint32_value = 5; // unsigned 32-bit integer.
+  int64 int64_value = 6; // signed 64-bit integer.
+  uint64 uint64_value = 7; // unsigned 64-bit integer.
+  bool bool_value = 14; // boolean value.
+  string string_value = 15; // UTF-8 string.
+  CompatibilityEnum enum_value = 17; // enum value.
+  CompatibilityMessage nested_value = 18; // nested message.
+  repeated string repeated_strings = 19; // repeated string array.
+  repeated int32 repeated_int32 = 20; // repeated int32 array.
+  repeated CompatibilityEnum repeated_enums = 21; // repeated enum array.
+  repeated CompatibilityMessage repeated_nested = 22; // repeated nested-message array.
+  map<string, string> string_map = 23; // string-to-string map.
+  map<int32, uint64> numeric_map = 24; // numeric-key and numeric-value map.
+  map<string, CompatibilityMessage> nested_map = 25; // string-key and nested-message-value map.
 }
 
 message GetUserNameResponse {
   string name = 1;
+
+  // These fields mirror the request to verify wire-format compatibility.
+  int32 int32_value = 4; // mirrors the request signed 32-bit integer.
+  uint32 uint32_value = 5; // mirrors the request unsigned 32-bit integer.
+  int64 int64_value = 6; // mirrors the request signed 64-bit integer.
+  uint64 uint64_value = 7; // mirrors the request unsigned 64-bit integer.
+  bool bool_value = 14; // mirrors the request boolean value.
+  string string_value = 15; // mirrors the request UTF-8 string.
+  CompatibilityEnum enum_value = 17; // mirrors the request enum value.
+  CompatibilityMessage nested_value = 18; // mirrors the request nested message.
+  repeated string repeated_strings = 19; // mirrors the request string array.
+  repeated int32 repeated_int32 = 20; // mirrors the request int32 array.
+  repeated CompatibilityEnum repeated_enums = 21; // mirrors the request enum array.
+  repeated CompatibilityMessage repeated_nested = 22; // mirrors the request nested-message array.
+  map<string, string> string_map = 23; // mirrors the request string map.
+  map<int32, uint64> numeric_map = 24; // mirrors the request numeric map.
+  map<string, CompatibilityMessage> nested_map = 25; // mirrors the request nested-message map.
+}
+
+enum CompatibilityEnum {
+  COMPATIBILITY_ENUM_UNSPECIFIED = 0;
+  COMPATIBILITY_ENUM_FIRST = 1;
+  COMPATIBILITY_ENUM_SECOND = 2;
+}
+
+// CompatibilityMessage exercises nested messages, repeated values, maps, and recursion.
+message CompatibilityMessage {
+  string label = 1; // nested UTF-8 string.
+  repeated int64 values = 2; // nested repeated signed 64-bit integer array.
+  map<string, int32> attributes = 3; // nested string-to-int32 map.
+  CompatibilityMessage child = 4; // recursively nested message.
 }

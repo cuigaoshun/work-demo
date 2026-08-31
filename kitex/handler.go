@@ -24,5 +24,22 @@ func (s *UserServiceImpl) GetUserName(ctx context.Context, req *user.GetUserName
 		return nil, err
 	}
 
-	return &user.GetUserNameResponse{Name: name}, nil
+	return &user.GetUserNameResponse{
+		Name:            name,
+		Int32Value:      req.GetInt32Value(),
+		Uint32Value:     req.GetUint32Value(),
+		Int64Value:      req.GetInt64Value(),
+		Uint64Value:     req.GetUint64Value(),
+		BoolValue:       req.GetBoolValue(),
+		StringValue:     req.GetStringValue(),
+		EnumValue:       req.GetEnumValue(),
+		NestedValue:     req.GetNestedValue(),
+		RepeatedStrings: req.GetRepeatedStrings(),
+		RepeatedInt32:   req.GetRepeatedInt32(),
+		RepeatedEnums:   req.GetRepeatedEnums(),
+		RepeatedNested:  req.GetRepeatedNested(),
+		StringMap:       req.GetStringMap(),
+		NumericMap:      req.GetNumericMap(),
+		NestedMap:       req.GetNestedMap(),
+	}, nil
 }

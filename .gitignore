@@ -26,5 +26,6 @@ common/kitex_gen/
 kitex/internal/ent/*
 !kitex/internal/ent/schema/
 !kitex/internal/ent/schema/**
+generated/
 
 *.iml

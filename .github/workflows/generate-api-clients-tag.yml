@@ -74,20 +74,21 @@ jobs:
             git worktree add -b realese /tmp/realese "${{ github.sha }}"
           fi
 
-          rsync -a --delete api/flutter/ /tmp/realese/api/flutter/
-          rsync -a --delete api/objc/ /tmp/realese/api/objc/
-          rsync -a --delete api/swift/ /tmp/realese/api/swift/
-          rsync -a --delete api/java/ /tmp/realese/api/java/
-          rsync -a --delete api/typescript/ /tmp/realese/api/typescript/
-          rsync -a --delete api/cpp/ /tmp/realese/api/cpp/
+          mkdir -p /tmp/realese/generated
+          rsync -a --delete generated/flutter/ /tmp/realese/generated/flutter/
+          rsync -a --delete generated/objc/ /tmp/realese/generated/objc/
+          rsync -a --delete generated/swift/ /tmp/realese/generated/swift/
+          rsync -a --delete generated/java/ /tmp/realese/generated/java/
+          rsync -a --delete generated/typescript/ /tmp/realese/generated/typescript/
+          rsync -a --delete generated/cpp/ /tmp/realese/generated/cpp/
 
           cd /tmp/realese
-          if [ -z "$(git status --porcelain --untracked-files=all -- api)" ]; then
+          if [ -z "$(git status --porcelain --untracked-files=all -- generated)" ]; then
             echo "no generated changes"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@github.com"
-          git add api
+          git add -f generated
           git commit -m "generate API clients for ${{ github.ref_name }}"
           git push origin HEAD:realese
