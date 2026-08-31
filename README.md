@@ -8,7 +8,7 @@ curl -X POST 'http://127.0.0.1:8080/users/1' \
   -d '{
     "int32_value": -7,
     "string_value": "compatibility",
-    "enum_value": "COMPATIBILITY_ENUM_FIRST",
+    "enum_value": 1,
     "repeated_strings": ["first", "second"],
     "repeated_int32": [10, 20],
     "string_map": {"key": "value"},
