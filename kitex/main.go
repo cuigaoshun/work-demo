@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	user "example.com/work-demo/common/kitex_gen/test/testservice"
+	"example.com/work-demo/common/kitex_gen/test/testservice"
 	"github.com/cloudwego/kitex/server"
 )
 
@@ -15,7 +15,7 @@ func main() {
 	}
 
 	handler := &TestServiceImpl{}
-	svr := user.NewServer(handler, server.WithServiceAddr(addr))
+	svr := testservice.NewServer(handler, server.WithServiceAddr(addr))
 
 	err = svr.Run()
 

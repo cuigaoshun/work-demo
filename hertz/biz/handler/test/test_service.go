@@ -6,8 +6,8 @@ import (
 	"context"
 	"encoding/json"
 
-	kitexuser "example.com/work-demo/common/kitex_gen/test"
-	test "example.com/work-demo/hertz/biz/model/test"
+	"example.com/work-demo/common/kitex_gen/test"
+	model "example.com/work-demo/hertz/biz/model/test"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
@@ -16,7 +16,7 @@ import (
 // @router /test-fields [POST]
 func TestFields(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req test.TestFieldsRequest
+	var req model.TestFieldsRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
@@ -28,7 +28,7 @@ func TestFields(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusInternalServerError, err.Error())
 		return
 	}
-	rpcReq := new(kitexuser.TestFieldsRequest)
+	rpcReq := new(test.TestFieldsRequest)
 	if err = json.Unmarshal(payload, rpcReq); err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
@@ -43,7 +43,7 @@ func TestFields(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusInternalServerError, err.Error())
 		return
 	}
-	resp := new(test.TestFieldsResponse)
+	resp := new(model.TestFieldsResponse)
 	if err = json.Unmarshal(payload, resp); err != nil {
 		c.String(consts.StatusInternalServerError, err.Error())
 		return
