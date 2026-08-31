@@ -22,6 +22,16 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.sha }}
 
+      - name: setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.25.8"
+
+      - name: install kitex
+        run: |
+          go install github.com/cloudwego/kitex/tool/cmd/kitex@v0.16.3
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
       - name: setup protoc
         run: |
           sudo apt-get update
@@ -63,15 +73,17 @@ jobs:
         run: npm install -g ts-proto
 
       - name: generate api clients
-        run: make gen-api-clients
+        run: make gen gen-api-clients
 
       - name: commit generated code
         run: |
           git fetch origin realese || true
+          new_branch=false
           if git show-ref --verify --quiet refs/remotes/origin/realese; then
             git worktree add /tmp/realese origin/realese
           else
             git worktree add -b realese /tmp/realese "${{ github.sha }}"
+            new_branch=true
           fi
 
           mkdir -p /tmp/realese/generated
@@ -81,14 +93,19 @@ jobs:
           rsync -a --delete generated/java/ /tmp/realese/generated/java/
           rsync -a --delete generated/typescript/ /tmp/realese/generated/typescript/
           rsync -a --delete generated/cpp/ /tmp/realese/generated/cpp/
+          rsync -a --delete common/kitex_gen/ /tmp/realese/common/kitex_gen/
+          rsync -a --delete kitex/internal/ent/ /tmp/realese/kitex/internal/ent/
 
           cd /tmp/realese
-          if [ -z "$(git status --porcelain --untracked-files=all -- generated)" ]; then
+          git add -f generated common/kitex_gen kitex/internal/ent
+          if git diff --cached --quiet; then
+            if [ "$new_branch" = true ]; then
+              git push origin HEAD:realese
+            fi
             echo "no generated changes"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@github.com"
-          git add -f generated
           git commit -m "generate API clients for ${{ github.ref_name }}"
           git push origin HEAD:realese
