@@ -3,7 +3,7 @@
 启动 Kitex 和 Hertz 服务后，可以用下面的请求验证 protobuf 标量、数组、map 和嵌套字段是否从入参完整回显到出参：
 
 ```bash
-curl -X POST 'http://127.0.0.1:8080/test-fields/1' \
+curl -X POST 'http://127.0.0.1:8080/test-fields' \
   -H 'Content-Type: application/json' \
   -d '{
     "int32_value": -7,

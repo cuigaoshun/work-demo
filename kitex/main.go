@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	user "example.com/work-demo/common/kitex_gen/user/testservice"
+	user "example.com/work-demo/common/kitex_gen/test/testservice"
 	"github.com/cloudwego/kitex/server"
 )
 
@@ -14,7 +14,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	handler := &UserServiceImpl{}
+	handler := &TestServiceImpl{}
 	svr := user.NewServer(handler, server.WithServiceAddr(addr))
 
 	err = svr.Run()

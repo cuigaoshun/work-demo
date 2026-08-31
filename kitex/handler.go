@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 
-	user "example.com/work-demo/common/kitex_gen/user"
+	user "example.com/work-demo/common/kitex_gen/test"
 )
 
-// UserServiceImpl implements the last service interface defined in the IDL.
-type UserServiceImpl struct {
-}
+// TestServiceImpl implements the TestService interface defined in the IDL.
+type TestServiceImpl struct{}
+
+var _ user.TestService = (*TestServiceImpl)(nil)
 
 // TestFields implements the TestService interface.
-func (s *UserServiceImpl) TestFields(ctx context.Context, req *user.TestFieldsRequest) (resp *user.TestFieldsResponse, err error) {
+func (s *TestServiceImpl) TestFields(ctx context.Context, req *user.TestFieldsRequest) (resp *user.TestFieldsResponse, err error) {
 	return &user.TestFieldsResponse{
 		Int32Value:      req.GetInt32Value(),
 		Uint32Value:     req.GetUint32Value(),

@@ -6,18 +6,17 @@ import (
 	"context"
 	"encoding/json"
 
-	kitexuser "example.com/work-demo/common/kitex_gen/user"
-	user "example.com/work-demo/hertz/biz/model/test"
+	kitexuser "example.com/work-demo/common/kitex_gen/test"
+	test "example.com/work-demo/hertz/biz/model/test"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/common/utils"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
 // TestFields .
-// @router /test-fields/:id [POST]
+// @router /test-fields [POST]
 func TestFields(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req user.TestFieldsRequest
+	var req test.TestFieldsRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
@@ -26,27 +25,27 @@ func TestFields(ctx context.Context, c *app.RequestContext) {
 
 	payload, err := json.Marshal(req)
 	if err != nil {
-		c.JSON(consts.StatusInternalServerError, utils.H{"error": err.Error()})
+		c.String(consts.StatusInternalServerError, err.Error())
 		return
 	}
 	rpcReq := new(kitexuser.TestFieldsRequest)
 	if err = json.Unmarshal(payload, rpcReq); err != nil {
-		c.JSON(consts.StatusBadRequest, utils.H{"error": err.Error()})
+		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
 	rpcResp, err := rpcClient.TestFields(ctx, rpcReq)
 	if err != nil {
-		c.JSON(consts.StatusInternalServerError, utils.H{"error": err.Error()})
+		c.String(consts.StatusInternalServerError, err.Error())
 		return
 	}
 	payload, err = json.Marshal(rpcResp)
 	if err != nil {
-		c.JSON(consts.StatusInternalServerError, utils.H{"error": err.Error()})
+		c.String(consts.StatusInternalServerError, err.Error())
 		return
 	}
-	resp := new(user.TestFieldsResponse)
+	resp := new(test.TestFieldsResponse)
 	if err = json.Unmarshal(payload, resp); err != nil {
-		c.JSON(consts.StatusInternalServerError, utils.H{"error": err.Error()})
+		c.String(consts.StatusInternalServerError, err.Error())
 		return
 	}
 	c.JSON(consts.StatusOK, resp)

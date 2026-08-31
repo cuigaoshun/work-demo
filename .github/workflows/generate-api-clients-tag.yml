@@ -15,6 +15,8 @@ concurrency:
 jobs:
   generate:
     runs-on: ubuntu-latest
+    env:
+      RELEASE_BRANCH: realese-${{ github.ref_name }}
     steps:
       - name: checkout
         uses: actions/checkout@v4
@@ -77,12 +79,12 @@ jobs:
 
       - name: commit generated code
         run: |
-          git fetch origin realese || true
+          git fetch origin "$RELEASE_BRANCH" || true
           new_branch=false
-          if git show-ref --verify --quiet refs/remotes/origin/realese; then
-            git worktree add /tmp/realese origin/realese
+          if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
+            git worktree add /tmp/realese "origin/$RELEASE_BRANCH"
           else
-            git worktree add -b realese /tmp/realese "${{ github.sha }}"
+            git worktree add -b "$RELEASE_BRANCH" /tmp/realese "${{ github.sha }}"
             new_branch=true
           fi
 
@@ -100,7 +102,7 @@ jobs:
           git add -f generated common/kitex_gen kitex/internal/ent
           if git diff --cached --quiet; then
             if [ "$new_branch" = true ]; then
-              git push origin HEAD:realese
+              git push origin "HEAD:$RELEASE_BRANCH"
             fi
             echo "no generated changes"
             exit 0
@@ -108,4 +110,4 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@github.com"
           git commit -m "generate API clients for ${{ github.ref_name }}"
-          git push origin HEAD:realese
+          git push origin "HEAD:$RELEASE_BRANCH"

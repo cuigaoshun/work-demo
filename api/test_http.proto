@@ -1,14 +1,12 @@
 syntax = "proto3";
 
-package user;
+package test;
 
 option go_package = "example.com/work-demo/hertz/biz/model/test";
 
 import "api.proto";
 
 message TestFieldsRequest {
-  int64 user_id = 1 [(api.path) = "id"];
-
   // 兼容性测试字段：覆盖常用标量、枚举、数组、映射和嵌套消息。
   int32 int32_value = 4; // 有符号 32 位整数。
   uint32 uint32_value = 5; // 无符号 32 位整数。
@@ -63,6 +61,6 @@ message CompatibilityMessage {
 
 service TestService {
   rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse) {
-  option (api.post) = "/test-fields/:id";
+  option (api.post) = "/test-fields";
   }
 }

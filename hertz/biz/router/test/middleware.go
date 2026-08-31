@@ -11,11 +11,6 @@ func rootMw() []app.HandlerFunc {
 	return nil
 }
 
-func _test_fieldsMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _testfieldsMw() []app.HandlerFunc {
 	// your code...
 	return nil

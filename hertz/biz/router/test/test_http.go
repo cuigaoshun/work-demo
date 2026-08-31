@@ -3,7 +3,7 @@
 package test
 
 import (
-	user "example.com/work-demo/hertz/biz/handler/test"
+	test "example.com/work-demo/hertz/biz/handler/test"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
@@ -17,8 +17,5 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
-	{
-		_test_fields := root.Group("/test-fields", _test_fieldsMw()...)
-		_test_fields.POST("/:id", append(_testfieldsMw(), user.TestFields)...)
-	}
+	root.POST("/test-fields", append(_testfieldsMw(), test.TestFields)...)
 }
