@@ -23,6 +23,8 @@
 # kitex
 thrift_streaming/output
 common/kitex_gen/
-kitex/internal/dal/query/
+kitex/internal/ent/*
+!kitex/internal/ent/schema/
+!kitex/internal/ent/schema/**
 
 *.iml

@@ -1,4 +1,4 @@
-.PHONY: gen gen-kitex gen-gorm gen-api-clients clean-api-clients
+.PHONY: gen gen-kitex gen-ent gen-api-clients clean-api-clients
 
 KITEX ?= $(shell go env GOPATH)/bin/kitex
 PROTOC ?= protoc
@@ -9,13 +9,13 @@ PROTOC_GEN_DART ?= $(shell command -v protoc-gen-dart 2>/dev/null)
 PROTOC_GEN_SWIFT ?= $(shell command -v protoc-gen-swift 2>/dev/null)
 PROTOC_GEN_TS_PROTO ?= $(shell command -v protoc-gen-ts_proto 2>/dev/null)
 
-gen: gen-kitex gen-gorm
+gen: gen-kitex gen-ent
 
 gen-kitex:
 	cd common && $(KITEX) -module example.com/work-demo/common -gen-path kitex_gen -I ../proto ../proto/user.proto
 
-gen-gorm:
-	cd kitex && go run ./cmd/gormgen
+gen-ent:
+	cd kitex && go run ./cmd/entgen
 
 clean-api-clients:
 	rm -rf $(API_OUT_BASE)/flutter $(API_OUT_BASE)/objc $(API_OUT_BASE)/swift $(API_OUT_BASE)/java $(API_OUT_BASE)/arkts $(API_OUT_BASE)/typescript $(API_OUT_BASE)/cpp
