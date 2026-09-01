@@ -17,6 +17,7 @@ func Register(r *server.Hertz) {
 
 func customizedRegister(r *server.Hertz) {
 	r.Any("/test/*path", testhandler.Proxy)
+	r.Any("/testjson/*path", testhandler.ProxyJSON)
 	// Keep application-owned routes outside generated files so hz update is safe.
 	r.GET("/ping", func(_ context.Context, c *app.RequestContext) {
 		c.String(consts.StatusOK, "pong")

@@ -1,9 +1,11 @@
 package gateway
 
 import (
+	"context"
 	"example.com/work-demo/kitex_gen/user/userservice"
 	"example.com/work-demo/kitex_gen/work/workservice"
 	"example.com/work-demo/pkg/constants"
+	dproto "github.com/cloudwego/dynamicgo/proto"
 	kitexclient "github.com/cloudwego/kitex/client"
 	"github.com/cloudwego/kitex/client/genericclient"
 	"github.com/cloudwego/kitex/pkg/generic"
@@ -15,6 +17,23 @@ func ProvideTestClient(opts *Options) (genericclient.Client, error) {
 	return genericclient.NewClient(constants.TestServiceName, g,
 		kitexclient.WithHostPorts(opts.TestAddr),
 		kitexclient.WithTransportProtocol(transport.TTHeaderFramed),
+	)
+}
+
+func ProvideTestJSONClient(opts *Options) (genericclient.Client, error) {
+	provider, err := generic.NewPbFileProviderWithDynamicGo(
+		"idl/test/test.proto", context.Background(), dproto.Options{}, "idl", "api",
+	)
+	if err != nil {
+		return nil, err
+	}
+	g, err := generic.JSONPbGeneric(provider)
+	if err != nil {
+		return nil, err
+	}
+	return genericclient.NewClient(constants.TestServiceName, g,
+		kitexclient.WithHostPorts(opts.TestAddr),
+		kitexclient.WithTransportProtocol(transport.TTHeader),
 	)
 }
 

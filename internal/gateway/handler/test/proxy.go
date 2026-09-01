@@ -27,3 +27,19 @@ func Proxy(ctx context.Context, c *app.RequestContext) {
 
 	c.Data(consts.StatusOK, "application/protobuf", response.([]byte))
 }
+
+// ProxyJSON forwards JSON requests using the protobuf descriptor-backed generic client.
+func ProxyJSON(ctx context.Context, c *app.RequestContext) {
+	method := strings.Trim(strings.TrimPrefix(c.Param("path"), "/"), "/")
+	if method == "" || strings.Contains(method, "/") {
+		c.String(consts.StatusBadRequest, "invalid test method")
+		return
+	}
+
+	response, err := client.GetTestJSON().GenericCall(ctx, method, string(c.GetRawData()))
+	if err != nil {
+		c.String(consts.StatusBadGateway, err.Error())
+		return
+	}
+	c.Data(consts.StatusOK, "application/json", []byte(response.(string)))
+}

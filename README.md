@@ -21,6 +21,21 @@ protoc -I api \
   api/test/test_api.proto < response.bin
 ```
 
+`/testjson/*` 使用 descriptor-backed `JSONPbGeneric`，可以直接传 JSON：
+
+```bash
+curl -X POST 'http://127.0.0.1:8080/testjson/TestFields' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "int32_value": -7,
+    "string_value": "compatibility",
+    "enum_value": 1,
+    "repeated_strings": ["first", "second"]
+  }'
+```
+
+`/testjson/` 后的路径同样直接作为 Kitex 方法名，响应为 JSON。
+
 `GET /works/:workID` 会先调用 WorkService 查询 `works` 表的 `id`、`name`、`user_id`，再调用 UserService 查询 `users` 表的用户信息，返回：
 
 ```json

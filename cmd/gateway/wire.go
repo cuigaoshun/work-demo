@@ -13,6 +13,7 @@ func NewServer() (*server.Server, error) {
 	panic(wire.Build(
 		server.DefaultOptions,
 		server.ProvideTestClient,
+		server.ProvideTestJSONClient,
 		server.ProvideUserClient,
 		server.ProvideWorkClient,
 		client.NewClientRegistry,

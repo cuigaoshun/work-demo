@@ -11,13 +11,14 @@ import (
 
 // Registry contains all outbound RPC clients used by the gateway.
 type Registry struct {
-	test genericclient.Client
-	user userservice.Client
-	work workservice.Client
+	test     genericclient.Client
+	testJSON genericclient.Client
+	user     userservice.Client
+	work     workservice.Client
 }
 
-func NewClientRegistry(test genericclient.Client, user userservice.Client, work workservice.Client) *Registry {
-	return &Registry{test: test, user: user, work: work}
+func NewClientRegistry(test genericclient.Client, testJSON genericclient.Client, user userservice.Client, work workservice.Client) *Registry {
+	return &Registry{test: test, testJSON: testJSON, user: user, work: work}
 }
 
 var (
@@ -53,6 +54,10 @@ func (r *Registry) Test() genericclient.Client {
 	return r.test
 }
 
+func (r *Registry) TestJSON() genericclient.Client {
+	return r.testJSON
+}
+
 func (r *Registry) User() userservice.Client {
 	return r.user
 }
@@ -63,6 +68,10 @@ func (r *Registry) Work() workservice.Client {
 
 func GetTest() genericclient.Client {
 	return Get().Test()
+}
+
+func GetTestJSON() genericclient.Client {
+	return Get().TestJSON()
 }
 
 func GetUser() userservice.Client {
