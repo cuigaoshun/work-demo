@@ -4,8 +4,7 @@
 package gateway
 
 import (
-	testhandler "example.com/work-demo/internal/handler/test"
-	workhandler "example.com/work-demo/internal/handler/work"
+	"example.com/work-demo/internal/client"
 	server "example.com/work-demo/internal/server/gateway"
 	"github.com/google/wire"
 )
@@ -16,8 +15,7 @@ func NewServer() (*server.Server, error) {
 		server.ProvideTestClient,
 		server.ProvideUserClient,
 		server.ProvideWorkClient,
-		testhandler.New,
-		workhandler.New,
+		client.NewClientRegistry,
 		server.New,
 	))
 }

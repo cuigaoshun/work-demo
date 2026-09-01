@@ -7,49 +7,30 @@ import (
 	"net/http"
 	"strconv"
 
+	client "example.com/work-demo/internal/client"
 	workmodel "example.com/work-demo/internal/model/work"
 	userpb "example.com/work-demo/kitex_gen/user"
-	"example.com/work-demo/kitex_gen/user/userservice"
 	workpb "example.com/work-demo/kitex_gen/work"
-	"example.com/work-demo/kitex_gen/work/workservice"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
-
-type Handler struct {
-	userClient userservice.Client
-	workClient workservice.Client
-}
-
-var defaultHandler *Handler
-
-func New(userClient userservice.Client, workClient workservice.Client) *Handler {
-	h := &Handler{userClient: userClient, workClient: workClient}
-	defaultHandler = h
-	return h
-}
 
 // GetWork is the handler referenced by the Hertz-generated route.
 func GetWork(ctx context.Context, c *app.RequestContext) {
-	if defaultHandler == nil {
-		c.String(consts.StatusInternalServerError, "work handler is not initialized")
-		return
-	}
+	clients := client.Get()
 
 	workID, err := strconv.ParseInt(c.Param("workID"), 10, 64)
 	if err != nil || workID <= 0 {
 		c.JSON(http.StatusBadRequest, map[string]string{"message": "invalid workID"})
 		return
 	}
-
-	workResult, err := defaultHandler.workClient.GetWork(ctx, &workpb.GetWorkRequest{WorkId: workID})
+	workResult, err := clients.Work().GetWork(ctx, &workpb.GetWorkRequest{WorkId: workID})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, map[string]string{"message": "get work failed"})
 		return
 	}
 
 	workItem := workResult.GetWork()
-	userResult, err := defaultHandler.userClient.GetUser(ctx, &userpb.GetUserRequest{UserId: workItem.GetUserId()})
+	userResult, err := clients.User().GetUser(ctx, &userpb.GetUserRequest{UserId: workItem.GetUserId()})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, map[string]string{"message": "get user failed"})
 		return
