@@ -19,7 +19,7 @@ func New(opts *Options, testHandler *testhandler.Handler, workHandler *workhandl
 
 func (s *Server) Run() error {
 	h := server.Default(server.WithHostPorts(s.opts.Addr))
-	router.GeneratedRegister(h)
+	router.Register(h)
 	h.Spin()
 	return nil
 }

@@ -2,5 +2,4 @@ syntax = "proto3";
 
 package api;
 
-import "test/test_api.proto";
-import "work/work.proto";
+option go_package = "example.com/work-demo/internal/model/api";
