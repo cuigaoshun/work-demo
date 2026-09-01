@@ -8,7 +8,7 @@ KITEX ?= $(shell go env GOPATH)/bin/kitex
 HZ ?= $(shell go env GOPATH)/bin/hz
 PROTOC ?= protoc
 PROTO_API_DIR ?= api
-API_PROTO_FILES ?= api.proto test/test.proto work/work.proto
+API_PROTO_FILES ?= api.proto test/test_api.proto work/work.proto
 API_OUT_BASE ?= generated
 PROTOC_GEN_DART ?= $(shell command -v protoc-gen-dart 2>/dev/null)
 PROTOC_GEN_SWIFT ?= $(shell command -v protoc-gen-swift 2>/dev/null)
@@ -40,7 +40,7 @@ gen-wire:
 	go run github.com/google/wire/cmd/wire gen ./cmd/work
 
 gen-hz:
-	$(HZ) update --idl api/test/test.proto --idl api/work/work.proto --module example.com/work-demo -I api
+	$(HZ) update --idl api/test/test_api.proto --idl api/work/work.proto --module example.com/work-demo -I api
 
 clean-api-clients: clean-api-client-dart clean-api-client-objc clean-api-client-swift clean-api-client-java clean-api-client-typescript clean-api-client-cpp
 
