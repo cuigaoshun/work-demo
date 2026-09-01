@@ -8,10 +8,10 @@ import (
 
 type Server struct {
 	opts    *Options
-	clients *client.ClientRegistry
+	clients *client.Registry
 }
 
-func New(opts *Options, clients *client.ClientRegistry) *Server {
+func New(opts *Options, clients *client.Registry) *Server {
 	client.SetDefault(clients)
 	return &Server{opts: opts, clients: clients}
 }

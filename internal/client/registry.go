@@ -9,36 +9,24 @@ import (
 	"example.com/work-demo/kitex_gen/work/workservice"
 )
 
-// ClientRegistry contains all outbound RPC clients used by the gateway.
-type ClientRegistry struct {
+// Registry contains all outbound RPC clients used by the gateway.
+type Registry struct {
 	test testservice.Client
 	user userservice.Client
 	work workservice.Client
 }
 
-func NewClientRegistry(test testservice.Client, user userservice.Client, work workservice.Client) *ClientRegistry {
-	return &ClientRegistry{test: test, user: user, work: work}
-}
-
-func (r *ClientRegistry) Test() testservice.Client {
-	return r.test
-}
-
-func (r *ClientRegistry) User() userservice.Client {
-	return r.user
-}
-
-func (r *ClientRegistry) Work() workservice.Client {
-	return r.work
+func NewClientRegistry(test testservice.Client, user userservice.Client, work workservice.Client) *Registry {
+	return &Registry{test: test, user: user, work: work}
 }
 
 var (
-	defaultRegistry     *ClientRegistry
+	defaultRegistry     *Registry
 	defaultRegistryOnce sync.Once
 )
 
 // SetDefault initializes the registry once during gateway startup.
-func SetDefault(registry *ClientRegistry) {
+func SetDefault(registry *Registry) {
 	if registry == nil {
 		panic("client registry is nil")
 	}
@@ -54,11 +42,23 @@ func SetDefault(registry *ClientRegistry) {
 }
 
 // Get returns the client registry published during gateway startup.
-func Get() *ClientRegistry {
+func Get() *Registry {
 	if defaultRegistry == nil {
 		panic("client registry is not initialized")
 	}
 	return defaultRegistry
+}
+
+func (r *Registry) Test() testservice.Client {
+	return r.test
+}
+
+func (r *Registry) User() userservice.Client {
+	return r.user
+}
+
+func (r *Registry) Work() workservice.Client {
+	return r.work
 }
 
 func GetTest() testservice.Client {
