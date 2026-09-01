@@ -1,4 +1,4 @@
-.PHONY: gen gen-kitex gen-ent gen-wire gen-api-clients clean-api-clients \
+.PHONY: install install-go-tools gen gen-kitex gen-ent gen-wire gen-api-clients clean-api-clients \
 	gen-api-client-dart gen-api-client-swift gen-api-client-java \
 	gen-api-client-typescript gen-api-client-cpp gen-api-client-objc \
 	clean-api-client-dart clean-api-client-swift clean-api-client-java \
@@ -12,6 +12,13 @@ API_OUT_BASE ?= generated
 PROTOC_GEN_DART ?= $(shell command -v protoc-gen-dart 2>/dev/null)
 PROTOC_GEN_SWIFT ?= $(shell command -v protoc-gen-swift 2>/dev/null)
 PROTOC_GEN_TS_PROTO ?= $(shell command -v protoc-gen-ts_proto 2>/dev/null)
+
+install: install-go-tools
+
+install-go-tools:
+	go install github.com/cloudwego/kitex/tool/cmd/kitex@latest
+	go install github.com/google/wire/cmd/wire@latest
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
 gen: gen-kitex gen-ent gen-wire
 
