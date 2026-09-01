@@ -29,9 +29,10 @@ jobs:
         with:
           go-version: "1.27.0"
 
-      - name: install kitex
+      - name: install code generators
         run: |
           go install github.com/cloudwego/kitex/tool/cmd/kitex@v0.16.3
+          go install github.com/cloudwego/hertz/cmd/hz@v0.9.7
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: setup protoc
@@ -75,7 +76,7 @@ jobs:
         run: npm install -g ts-proto
 
       - name: generate api clients
-        run: make gen gen-api-clients
+        run: make gen gen-hz gen-api-clients
 
       - name: commit generated code
         run: |
@@ -96,10 +97,20 @@ jobs:
           rsync -a --delete generated/typescript/ /tmp/realese/generated/typescript/
           rsync -a --delete generated/cpp/ /tmp/realese/generated/cpp/
           rsync -a --delete kitex_gen/ /tmp/realese/kitex_gen/
-          rsync -a --delete internal/ent/ /tmp/realese/internal/ent/
+          rsync -a --delete internal/model/ /tmp/realese/internal/model/
+          rsync -a --delete internal/handler/ /tmp/realese/internal/handler/
+          rsync -a --delete internal/router/ /tmp/realese/internal/router/
+          rsync -a --delete internal/service/user/data/ent/ /tmp/realese/internal/service/user/data/ent/
+          rsync -a --delete internal/service/work/data/ent/ /tmp/realese/internal/service/work/data/ent/
+          rsync -a cmd/gateway/wire_gen.go /tmp/realese/cmd/gateway/wire_gen.go
+          rsync -a cmd/test/wire_gen.go /tmp/realese/cmd/test/wire_gen.go
+          rsync -a cmd/user/wire_gen.go /tmp/realese/cmd/user/wire_gen.go
+          rsync -a cmd/work/wire_gen.go /tmp/realese/cmd/work/wire_gen.go
 
           cd /tmp/realese
-          git add -f generated kitex_gen internal/ent
+          git add -f generated kitex_gen internal/model internal/handler internal/router \
+            internal/service/user/data/ent internal/service/work/data/ent \
+            cmd/gateway/wire_gen.go cmd/test/wire_gen.go cmd/user/wire_gen.go cmd/work/wire_gen.go
           if git diff --cached --quiet; then
             if [ "$new_branch" = true ]; then
               git push origin "HEAD:$RELEASE_BRANCH"
