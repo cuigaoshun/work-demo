@@ -4,17 +4,18 @@
 package user
 
 import (
+	userserver "example.com/work-demo/internal/server/user"
 	userservice "example.com/work-demo/internal/service/user"
 	"example.com/work-demo/internal/service/user/data"
 	"github.com/google/wire"
 )
 
-func NewServer() (*Server, error) {
+func NewServer() (*userserver.Server, error) {
 	panic(wire.Build(
-		DefaultOptions,
+		userserver.DefaultOptions,
 		data.OpenDB,
 		data.NewUserRepository,
 		userservice.New,
-		New,
+		userserver.New,
 	))
 }

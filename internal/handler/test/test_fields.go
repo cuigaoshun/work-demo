@@ -15,11 +15,24 @@ type Handler struct {
 	client testservice.Client
 }
 
+var defaultHandler *Handler
+
 func New(client testservice.Client) *Handler {
-	return &Handler{client: client}
+	h := &Handler{client: client}
+	defaultHandler = h
+	return h
 }
 
-func (h *Handler) TestFields(ctx context.Context, c *app.RequestContext) {
+// TestFields is the handler referenced by the API route registration.
+func TestFields(ctx context.Context, c *app.RequestContext) {
+	if defaultHandler == nil {
+		c.String(consts.StatusInternalServerError, "test handler is not initialized")
+		return
+	}
+	defaultHandler.handleTestFields(ctx, c)
+}
+
+func (h *Handler) handleTestFields(ctx context.Context, c *app.RequestContext) {
 	request := new(model.TestFieldsRequest)
 	if err := c.BindAndValidate(request); err != nil {
 		c.String(consts.StatusBadRequest, err.Error())

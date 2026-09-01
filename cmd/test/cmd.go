@@ -1,13 +1,12 @@
 package test
 
 import (
-	testserver "example.com/work-demo/internal/server/test"
 	"example.com/work-demo/pkg/constants"
 	"github.com/spf13/cobra"
 )
 
 func Run() error {
-	service, err := testserver.NewServer()
+	service, err := NewServer()
 	if err != nil {
 		return err
 	}

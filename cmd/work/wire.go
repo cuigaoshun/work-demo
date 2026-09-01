@@ -4,17 +4,18 @@
 package work
 
 import (
+	workserver "example.com/work-demo/internal/server/work"
 	workservice "example.com/work-demo/internal/service/work"
 	"example.com/work-demo/internal/service/work/data"
 	"github.com/google/wire"
 )
 
-func NewServer() (*Server, error) {
+func NewServer() (*workserver.Server, error) {
 	panic(wire.Build(
-		DefaultOptions,
+		workserver.DefaultOptions,
 		data.OpenDB,
 		data.NewWorkRepository,
 		workservice.New,
-		New,
+		workserver.New,
 	))
 }

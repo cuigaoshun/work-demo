@@ -1,13 +1,12 @@
 package gateway
 
 import (
-	gatewayserver "example.com/work-demo/internal/server/gateway"
 	"example.com/work-demo/pkg/constants"
 	"github.com/spf13/cobra"
 )
 
 func Run() error {
-	service, err := gatewayserver.NewServer()
+	service, err := NewServer()
 	if err != nil {
 		return err
 	}

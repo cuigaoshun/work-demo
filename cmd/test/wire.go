@@ -4,14 +4,15 @@
 package test
 
 import (
+	testserver "example.com/work-demo/internal/server/test"
 	testservice "example.com/work-demo/internal/service/test"
 	"github.com/google/wire"
 )
 
-func NewServer() (*Server, error) {
+func NewServer() (*testserver.Server, error) {
 	panic(wire.Build(
-		DefaultOptions,
+		testserver.DefaultOptions,
 		testservice.New,
-		New,
+		testserver.New,
 	))
 }

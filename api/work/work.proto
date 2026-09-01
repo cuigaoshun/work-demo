@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package work;
+
+option go_package = "example.com/work-demo/internal/model/work";
+
+import "api.proto";
+
+message GetWorkRequest {
+  int64 work_id = 1 [(api.path) = "workID"];
+}
+
+message GetWorkResponse {
+  int64 id = 1;
+  string name = 2;
+  User user = 3;
+}
+
+message User {
+  int64 id = 1;
+  string name = 2;
+}
+
+service WorkService {
+  rpc GetWork(GetWorkRequest) returns (GetWorkResponse) {
+    option (api.get) = "/works/:workID";
+  }
+}

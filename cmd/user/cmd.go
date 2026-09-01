@@ -1,13 +1,12 @@
 package user
 
 import (
-	userserver "example.com/work-demo/internal/server/user"
 	"example.com/work-demo/pkg/constants"
 	"github.com/spf13/cobra"
 )
 
 func Run() error {
-	service, err := userserver.NewServer()
+	service, err := NewServer()
 	if err != nil {
 		return err
 	}

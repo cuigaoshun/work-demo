@@ -1,13 +1,14 @@
-.PHONY: install install-go-tools gen gen-kitex gen-ent gen-wire gen-api-clients clean-api-clients \
+.PHONY: install install-go-tools gen gen-kitex gen-ent gen-wire gen-hz gen-api-clients clean-api-clients \
 	gen-api-client-dart gen-api-client-swift gen-api-client-java \
 	gen-api-client-typescript gen-api-client-cpp gen-api-client-objc \
 	clean-api-client-dart clean-api-client-swift clean-api-client-java \
 	clean-api-client-typescript clean-api-client-cpp clean-api-client-objc
 
 KITEX ?= $(shell go env GOPATH)/bin/kitex
+HZ ?= $(shell go env GOPATH)/bin/hz
 PROTOC ?= protoc
 PROTO_API_DIR ?= api
-API_PROTO_FILES ?= api.proto test/test_http.proto
+API_PROTO_FILES ?= api.proto test/test.proto work/work.proto
 API_OUT_BASE ?= generated
 PROTOC_GEN_DART ?= $(shell command -v protoc-gen-dart 2>/dev/null)
 PROTOC_GEN_SWIFT ?= $(shell command -v protoc-gen-swift 2>/dev/null)
@@ -17,6 +18,7 @@ install: install-go-tools
 
 install-go-tools:
 	go install github.com/cloudwego/kitex/tool/cmd/kitex@latest
+	go install github.com/cloudwego/hertz/cmd/hz@latest
 	go install github.com/google/wire/cmd/wire@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
 
@@ -32,10 +34,13 @@ gen-ent:
 	go run ./cmd/entgen
 
 gen-wire:
-	go run github.com/google/wire/cmd/wire gen ./internal/server/gateway
-	go run github.com/google/wire/cmd/wire gen ./internal/server/test
-	go run github.com/google/wire/cmd/wire gen ./internal/server/user
-	go run github.com/google/wire/cmd/wire gen ./internal/server/work
+	go run github.com/google/wire/cmd/wire gen ./cmd/gateway
+	go run github.com/google/wire/cmd/wire gen ./cmd/test
+	go run github.com/google/wire/cmd/wire gen ./cmd/user
+	go run github.com/google/wire/cmd/wire gen ./cmd/work
+
+gen-hz:
+	$(HZ) update --idl api/test/test.proto --idl api/work/work.proto --module example.com/work-demo -I api
 
 clean-api-clients: clean-api-client-dart clean-api-client-objc clean-api-client-swift clean-api-client-java clean-api-client-typescript clean-api-client-cpp
 
