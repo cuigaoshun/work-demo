@@ -27,7 +27,7 @@ jobs:
       - name: setup go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25.8"
+          go-version: "1.27.0"
 
       - name: install kitex
         run: |
@@ -95,11 +95,11 @@ jobs:
           rsync -a --delete generated/java/ /tmp/realese/generated/java/
           rsync -a --delete generated/typescript/ /tmp/realese/generated/typescript/
           rsync -a --delete generated/cpp/ /tmp/realese/generated/cpp/
-          rsync -a --delete common/kitex_gen/ /tmp/realese/common/kitex_gen/
-          rsync -a --delete kitex/internal/ent/ /tmp/realese/kitex/internal/ent/
+          rsync -a --delete kitex_gen/ /tmp/realese/kitex_gen/
+          rsync -a --delete internal/ent/ /tmp/realese/internal/ent/
 
           cd /tmp/realese
-          git add -f generated common/kitex_gen kitex/internal/ent
+          git add -f generated kitex_gen internal/ent
           if git diff --cached --quiet; then
             if [ "$new_branch" = true ]; then
               git push origin "HEAD:$RELEASE_BRANCH"

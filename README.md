@@ -1,6 +1,8 @@
 # work-demo
 
-启动 Kitex 和 Hertz 服务后，可以用下面的请求验证 protobuf 标量、数组、map 和嵌套字段是否从入参完整回显到出参：
+服务从根目录 `cmd` 启动：`gateway` 提供 HTTP 接口，`test`、`user`、`work` 提供 Kitex RPC 接口。生成的 Kitex 代码统一位于根目录 `kitex_gen`。
+
+`POST /test-fields` 保留原有 protobuf 标量、数组、map 和嵌套字段回显行为：
 
 ```bash
 curl -X POST 'http://127.0.0.1:8080/test-fields' \
@@ -17,3 +19,16 @@ curl -X POST 'http://127.0.0.1:8080/test-fields' \
 ```
 
 `TestFields` 接口不访问数据库，测试字段会由请求原样复制到响应。
+
+`GET /works/:workID` 会先调用 WorkService 查询 `works` 表的 `id`、`name`、`user_id`，再调用 UserService 查询 `users` 表的用户信息，返回：
+
+```json
+{
+  "id": 1,
+  "name": "example work",
+  "user": {
+    "id": 1,
+    "name": "example user"
+  }
+}
+```

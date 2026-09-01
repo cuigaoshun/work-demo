@@ -22,10 +22,10 @@
 
 # kitex
 thrift_streaming/output
-common/kitex_gen/
-kitex/internal/ent/*
-!kitex/internal/ent/schema/
-!kitex/internal/ent/schema/**
+kitex_gen/
+internal/ent/*
+!internal/ent/schema/
+!internal/ent/schema/**
 generated/
 
 *.iml
