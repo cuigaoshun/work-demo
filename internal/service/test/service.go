@@ -8,6 +8,10 @@ import (
 
 type Service struct{}
 
+func New() *Service {
+	return &Service{}
+}
+
 func (s *Service) TestFields(ctx context.Context, req *testpb.TestFieldsRequest) (*testpb.TestFieldsResponse, error) {
 	return &testpb.TestFieldsResponse{
 		Int32Value:      req.GetInt32Value(),

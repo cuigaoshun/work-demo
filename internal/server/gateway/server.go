@@ -12,36 +12,31 @@ import (
 )
 
 type Server struct {
-	opts *Options
+	opts        *Options
+	testHandler *testhandler.Handler
+	workHandler *workhandler.WorkHandler
 }
 
-func NewServer(opts *Options) *Server {
-	if opts == nil {
-		opts = DefaultOptions()
-	}
-
-	return &Server{opts: opts}
+func New(opts *Options, testHandler *testhandler.Handler, workHandler *workhandler.WorkHandler) *Server {
+	return &Server{opts: opts, testHandler: testHandler, workHandler: workHandler}
 }
 
 func (s *Server) Run() error {
-	testClient, err := testservice.NewClient(constants.TestServiceName, kitexclient.WithHostPorts(s.opts.TestAddr))
-	if err != nil {
-		return err
-	}
-
-	userClient, err := userservice.NewClient(constants.UserServiceName, kitexclient.WithHostPorts(s.opts.UserAddr))
-	if err != nil {
-		return err
-	}
-
-	workClient, err := workservice.NewClient(constants.WorkServiceName, kitexclient.WithHostPorts(s.opts.WorkAddr))
-	if err != nil {
-		return err
-	}
-
 	h := server.Default(server.WithHostPorts(s.opts.Addr))
-	h.POST("/test-fields", testhandler.New(testClient).TestFields)
-	h.GET("/works/:workID", workhandler.NewWorkHandler(userClient, workClient).GetWork)
+	h.POST("/test-fields", s.testHandler.TestFields)
+	h.GET("/works/:workID", s.workHandler.GetWork)
 	h.Spin()
 	return nil
+}
+
+func provideTestClient(opts *Options) (testservice.Client, error) {
+	return testservice.NewClient(constants.TestServiceName, kitexclient.WithHostPorts(opts.TestAddr))
+}
+
+func provideUserClient(opts *Options) (userservice.Client, error) {
+	return userservice.NewClient(constants.UserServiceName, kitexclient.WithHostPorts(opts.UserAddr))
+}
+
+func provideWorkClient(opts *Options) (workservice.Client, error) {
+	return workservice.NewClient(constants.WorkServiceName, kitexclient.WithHostPorts(opts.WorkAddr))
 }

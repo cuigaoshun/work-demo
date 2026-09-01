@@ -23,6 +23,7 @@
 # kitex
 thrift_streaming/output
 kitex_gen/
+**/wire_gen.go
 internal/ent/*
 !internal/ent/schema/
 !internal/ent/schema/**

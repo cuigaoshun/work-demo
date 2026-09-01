@@ -3,36 +3,29 @@ package work
 import (
 	"net"
 
-	"example.com/work-demo/internal/data"
+	"example.com/work-demo/internal/ent"
 	workserviceimpl "example.com/work-demo/internal/service/work"
 	"example.com/work-demo/kitex_gen/work/workservice"
 	"github.com/cloudwego/kitex/server"
 )
 
 type Server struct {
-	opts *Options
+	opts    *Options
+	client  *ent.Client
+	service *workserviceimpl.Service
 }
 
-func NewServer(opts *Options) *Server {
-	if opts == nil {
-		opts = DefaultOptions()
-	}
-
-	return &Server{opts: opts}
+func New(opts *Options, client *ent.Client, service *workserviceimpl.Service) *Server {
+	return &Server{opts: opts, client: client, service: service}
 }
 
 func (s *Server) Run() error {
-	db, err := data.OpenDB()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+	defer s.client.Close()
 
 	addr, err := net.ResolveTCPAddr("tcp", s.opts.Addr)
 	if err != nil {
 		return err
 	}
 
-	impl := workserviceimpl.New(data.NewWorkRepository(db))
-	return workservice.NewServer(impl, server.WithServiceAddr(addr)).Run()
+	return workservice.NewServer(s.service, server.WithServiceAddr(addr)).Run()
 }

@@ -1,4 +1,4 @@
-.PHONY: gen gen-kitex gen-ent gen-api-clients clean-api-clients \
+.PHONY: gen gen-kitex gen-ent gen-wire gen-api-clients clean-api-clients \
 	gen-api-client-dart gen-api-client-swift gen-api-client-java \
 	gen-api-client-typescript gen-api-client-cpp gen-api-client-objc \
 	clean-api-client-dart clean-api-client-swift clean-api-client-java \
@@ -13,7 +13,7 @@ PROTOC_GEN_DART ?= $(shell command -v protoc-gen-dart 2>/dev/null)
 PROTOC_GEN_SWIFT ?= $(shell command -v protoc-gen-swift 2>/dev/null)
 PROTOC_GEN_TS_PROTO ?= $(shell command -v protoc-gen-ts_proto 2>/dev/null)
 
-gen: gen-kitex gen-ent
+gen: gen-kitex gen-ent gen-wire
 
 gen-kitex:
 	rm -rf kitex_gen/test kitex_gen/user kitex_gen/work
@@ -23,6 +23,12 @@ gen-kitex:
 
 gen-ent:
 	go run ./cmd/entgen
+
+gen-wire:
+	go run github.com/google/wire/cmd/wire gen ./internal/server/gateway
+	go run github.com/google/wire/cmd/wire gen ./internal/server/test
+	go run github.com/google/wire/cmd/wire gen ./internal/server/user
+	go run github.com/google/wire/cmd/wire gen ./internal/server/work
 
 clean-api-clients: clean-api-client-dart clean-api-client-objc clean-api-client-swift clean-api-client-java clean-api-client-typescript clean-api-client-cpp
 

@@ -9,15 +9,12 @@ import (
 )
 
 type Server struct {
-	opts *Options
+	opts    *Options
+	service *testserviceimpl.Service
 }
 
-func NewServer(opts *Options) *Server {
-	if opts == nil {
-		opts = DefaultOptions()
-	}
-
-	return &Server{opts: opts}
+func New(opts *Options, service *testserviceimpl.Service) *Server {
+	return &Server{opts: opts, service: service}
 }
 
 func (s *Server) Run() error {
@@ -26,5 +23,5 @@ func (s *Server) Run() error {
 		return err
 	}
 
-	return testservice.NewServer(&testserviceimpl.Service{}, server.WithServiceAddr(addr)).Run()
+	return testservice.NewServer(s.service, server.WithServiceAddr(addr)).Run()
 }

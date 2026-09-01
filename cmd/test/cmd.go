@@ -7,7 +7,12 @@ import (
 )
 
 func Run() error {
-	return testserver.NewServer(nil).Run()
+	service, err := testserver.NewServer()
+	if err != nil {
+		return err
+	}
+
+	return service.Run()
 }
 
 func NewCommand() *cobra.Command {
