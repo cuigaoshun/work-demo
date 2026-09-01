@@ -5,7 +5,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	entsql "entgo.io/ent/dialect/sql"
-	"example.com/work-demo/internal/ent"
+	"example.com/work-demo/internal/service/user/data/ent"
 	_ "github.com/go-sql-driver/mysql"
 )
 

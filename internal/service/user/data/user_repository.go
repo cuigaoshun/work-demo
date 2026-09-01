@@ -3,8 +3,8 @@ package data
 import (
 	"context"
 
-	"example.com/work-demo/internal/ent"
-	"example.com/work-demo/internal/ent/user"
+	"example.com/work-demo/internal/service/user/data/ent"
+	"example.com/work-demo/internal/service/user/data/ent/user"
 )
 
 type User struct {

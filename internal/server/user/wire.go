@@ -4,8 +4,8 @@
 package user
 
 import (
-	"example.com/work-demo/internal/data"
 	userservice "example.com/work-demo/internal/service/user"
+	"example.com/work-demo/internal/service/user/data"
 	"github.com/google/wire"
 )
 

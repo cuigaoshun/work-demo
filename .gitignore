@@ -24,9 +24,9 @@
 thrift_streaming/output
 kitex_gen/
 **/wire_gen.go
-internal/ent/*
-!internal/ent/schema/
-!internal/ent/schema/**
+internal/service/*/data/ent/*
+!internal/service/*/data/ent/schema/
+!internal/service/*/data/ent/schema/**
 generated/
 
 *.iml

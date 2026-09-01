@@ -19,8 +19,11 @@ func moduleRoot() string {
 
 func main() {
 	root := moduleRoot()
-	schema := filepath.Join(root, "internal", "ent", "schema")
-	if err := entc.Generate(schema, &gen.Config{Target: filepath.Join(root, "internal", "ent")}); err != nil {
-		log.Fatal(err)
+	for _, service := range []string{"user", "work"} {
+		target := filepath.Join(root, "internal", "service", service, "data", "ent")
+		schema := filepath.Join(target, "schema")
+		if err := entc.Generate(schema, &gen.Config{Target: target}); err != nil {
+			log.Fatal(err)
+		}
 	}
 }

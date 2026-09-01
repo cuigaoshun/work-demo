@@ -3,15 +3,15 @@ package user
 import (
 	"context"
 
-	"example.com/work-demo/internal/data"
+	userdata "example.com/work-demo/internal/service/user/data"
 	userpb "example.com/work-demo/kitex_gen/user"
 )
 
 type Service struct {
-	repository *data.UserRepository
+	repository *userdata.UserRepository
 }
 
-func New(repository *data.UserRepository) *Service {
+func New(repository *userdata.UserRepository) *Service {
 	return &Service{repository: repository}
 }
 

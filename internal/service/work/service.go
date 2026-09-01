@@ -3,15 +3,15 @@ package work
 import (
 	"context"
 
-	"example.com/work-demo/internal/data"
+	workdata "example.com/work-demo/internal/service/work/data"
 	workpb "example.com/work-demo/kitex_gen/work"
 )
 
 type Service struct {
-	repository *data.WorkRepository
+	repository *workdata.WorkRepository
 }
 
-func New(repository *data.WorkRepository) *Service {
+func New(repository *workdata.WorkRepository) *Service {
 	return &Service{repository: repository}
 }
 

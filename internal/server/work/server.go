@@ -3,8 +3,8 @@ package work
 import (
 	"net"
 
-	"example.com/work-demo/internal/ent"
 	workserviceimpl "example.com/work-demo/internal/service/work"
+	"example.com/work-demo/internal/service/work/data/ent"
 	"example.com/work-demo/kitex_gen/work/workservice"
 	"github.com/cloudwego/kitex/server"
 )

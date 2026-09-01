@@ -3,8 +3,8 @@ package user
 import (
 	"net"
 
-	"example.com/work-demo/internal/ent"
 	userserviceimpl "example.com/work-demo/internal/service/user"
+	"example.com/work-demo/internal/service/user/data/ent"
 	"example.com/work-demo/kitex_gen/user/userservice"
 	"github.com/cloudwego/kitex/server"
 )
