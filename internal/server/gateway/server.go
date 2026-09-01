@@ -1,8 +1,8 @@
 package gateway
 
 import (
-	"example.com/work-demo/internal/client"
-	"example.com/work-demo/internal/router"
+	"example.com/work-demo/internal/gateway/client"
+	"example.com/work-demo/internal/gateway/router"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 

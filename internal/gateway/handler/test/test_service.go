@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
-	client "example.com/work-demo/internal/client"
-	model "example.com/work-demo/internal/model/test"
+	client "example.com/work-demo/internal/gateway/client"
+	model "example.com/work-demo/internal/gateway/model/test"
 	testpb "example.com/work-demo/kitex_gen/test"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"

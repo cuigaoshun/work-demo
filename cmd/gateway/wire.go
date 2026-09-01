@@ -4,7 +4,7 @@
 package gateway
 
 import (
-	"example.com/work-demo/internal/client"
+	"example.com/work-demo/internal/gateway/client"
 	server "example.com/work-demo/internal/server/gateway"
 	"github.com/google/wire"
 )

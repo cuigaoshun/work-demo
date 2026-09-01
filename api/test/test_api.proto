@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package test;
 
-option go_package = "example.com/work-demo/internal/model/test";
+option go_package = "example.com/work-demo/internal/gateway/model/test";
 
 import "api.proto";
 

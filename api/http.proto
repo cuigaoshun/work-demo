@@ -2,4 +2,4 @@ syntax = "proto3";
 
 package api;
 
-option go_package = "example.com/work-demo/internal/model/api";
+option go_package = "example.com/work-demo/internal/gateway/model/api";
