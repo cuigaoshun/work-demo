@@ -3,7 +3,7 @@ package test
 import (
 	"context"
 
-	testpb "example.com/work-demo/kitex_gen/test"
+	testpb "example.com/work-demo/internal/gateway/model/testapi"
 )
 
 type Service struct{}

@@ -20,6 +20,8 @@ curl -X POST 'http://127.0.0.1:8080/test-fields' \
 
 `TestFields` 接口不访问数据库，测试字段会由请求原样复制到响应。
 
+网关的 `TestFields` handler 使用 Kitex Binary Protobuf Generic Client：请求在 handler 内序列化为 protobuf 二进制，调用 `TestService.TestFields`，再将二进制响应反序列化为 API 响应。
+
 `GET /works/:workID` 会先调用 WorkService 查询 `works` 表的 `id`、`name`、`user_id`，再调用 UserService 查询 `users` 表的用户信息，返回：
 
 ```json

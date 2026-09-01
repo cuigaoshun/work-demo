@@ -4,19 +4,19 @@ package client
 import (
 	"sync"
 
-	"example.com/work-demo/kitex_gen/test/testservice"
 	"example.com/work-demo/kitex_gen/user/userservice"
 	"example.com/work-demo/kitex_gen/work/workservice"
+	"github.com/cloudwego/kitex/client/genericclient"
 )
 
 // Registry contains all outbound RPC clients used by the gateway.
 type Registry struct {
-	test testservice.Client
+	test genericclient.Client
 	user userservice.Client
 	work workservice.Client
 }
 
-func NewClientRegistry(test testservice.Client, user userservice.Client, work workservice.Client) *Registry {
+func NewClientRegistry(test genericclient.Client, user userservice.Client, work workservice.Client) *Registry {
 	return &Registry{test: test, user: user, work: work}
 }
 
@@ -49,7 +49,7 @@ func Get() *Registry {
 	return defaultRegistry
 }
 
-func (r *Registry) Test() testservice.Client {
+func (r *Registry) Test() genericclient.Client {
 	return r.test
 }
 
@@ -61,7 +61,7 @@ func (r *Registry) Work() workservice.Client {
 	return r.work
 }
 
-func GetTest() testservice.Client {
+func GetTest() genericclient.Client {
 	return Get().Test()
 }
 

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package test;
 
-option go_package = "example.com/work-demo/internal/gateway/model/test";
+option go_package = "example.com/work-demo/internal/gateway/model/testapi";
 
 import "api.proto";
 
@@ -59,7 +59,7 @@ message CompatibilityMessage {
   CompatibilityMessage child = 4; // 递归嵌套消息。
 }
 
-service TestService {
+service TestHTTPService {
   rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse) {
   option (api.post) = "/test-fields";
   }

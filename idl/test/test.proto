@@ -4,58 +4,8 @@ package test;
 
 option go_package = "example.com/work-demo/kitex_gen/test";
 
+import "test/test_api.proto";
+
 service TestService {
   rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse);
-}
-
-message TestFieldsRequest {
-  // 兼容性测试字段：覆盖常用标量、枚举、数组、映射和嵌套消息。
-  int32 int32_value = 4; // 有符号 32 位整数。
-  uint32 uint32_value = 5; // 无符号 32 位整数。
-  int64 int64_value = 6; // 有符号 64 位整数。
-  uint64 uint64_value = 7; // 无符号 64 位整数。
-  bool bool_value = 14; // 布尔值。
-  string string_value = 15; // UTF-8 字符串。
-  CompatibilityEnum enum_value = 17; // 枚举值。
-  CompatibilityMessage nested_value = 18; // 嵌套消息。
-  repeated string repeated_strings = 19; // 字符串数组。
-  repeated int32 repeated_int32 = 20; // 32 位整数数组。
-  repeated CompatibilityEnum repeated_enums = 21; // 枚举数组。
-  repeated CompatibilityMessage repeated_nested = 22; // 嵌套消息数组。
-  map<string, string> string_map = 23; // 字符串映射。
-  map<int32, uint64> numeric_map = 24; // 数字映射。
-  map<string, CompatibilityMessage> nested_map = 25; // 嵌套消息映射。
-}
-
-message TestFieldsResponse {
-  // 以下字段与请求保持一致，用于验证字段兼容性。
-  int32 int32_value = 4; // 回传有符号 32 位整数。
-  uint32 uint32_value = 5; // 回传无符号 32 位整数。
-  int64 int64_value = 6; // 回传有符号 64 位整数。
-  uint64 uint64_value = 7; // 回传无符号 64 位整数。
-  bool bool_value = 14; // 回传布尔值。
-  string string_value = 15; // 回传 UTF-8 字符串。
-  CompatibilityEnum enum_value = 17; // 回传枚举值。
-  CompatibilityMessage nested_value = 18; // 回传嵌套消息。
-  repeated string repeated_strings = 19; // 回传字符串数组。
-  repeated int32 repeated_int32 = 20; // 回传 32 位整数数组。
-  repeated CompatibilityEnum repeated_enums = 21; // 回传枚举数组。
-  repeated CompatibilityMessage repeated_nested = 22; // 回传嵌套消息数组。
-  map<string, string> string_map = 23; // 回传字符串映射。
-  map<int32, uint64> numeric_map = 24; // 回传数字映射。
-  map<string, CompatibilityMessage> nested_map = 25; // 回传嵌套消息映射。
-}
-
-enum CompatibilityEnum {
-  COMPATIBILITY_ENUM_UNSPECIFIED = 0;
-  COMPATIBILITY_ENUM_FIRST = 1;
-  COMPATIBILITY_ENUM_SECOND = 2;
-}
-
-// CompatibilityMessage 用于测试嵌套消息、数组、映射和递归嵌套。
-message CompatibilityMessage {
-  string label = 1; // 嵌套字符串。
-  repeated int64 values = 2; // 64 位整数数组。
-  map<string, int32> attributes = 3; // 字符串到整数映射。
-  CompatibilityMessage child = 4; // 递归嵌套消息。
 }

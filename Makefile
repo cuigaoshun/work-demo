@@ -26,7 +26,7 @@ gen: gen-kitex gen-ent gen-wire
 
 gen-kitex:
 	rm -rf kitex_gen/test kitex_gen/user kitex_gen/work
-	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl idl/test/test.proto
+	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl -I api idl/test/test.proto
 	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl idl/user/user.proto
 	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl idl/work/work.proto
 
