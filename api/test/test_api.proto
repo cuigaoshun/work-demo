@@ -4,8 +4,6 @@ package test;
 
 option go_package = "example.com/work-demo/internal/gateway/model/testapi";
 
-import "api.proto";
-
 message TestFieldsRequest {
   // 兼容性测试字段：覆盖常用标量、枚举、数组、映射和嵌套消息。
   int32 int32_value = 4; // 有符号 32 位整数。
@@ -57,10 +55,4 @@ message CompatibilityMessage {
   repeated int64 values = 2; // 64 位整数数组。
   map<string, int32> attributes = 3; // 字符串到整数映射。
   CompatibilityMessage child = 4; // 递归嵌套消息。
-}
-
-service TestHTTPService {
-  rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse) {
-  option (api.post) = "/test-fields";
-  }
 }

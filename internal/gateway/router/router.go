@@ -3,6 +3,7 @@ package router
 import (
 	"context"
 
+	testhandler "example.com/work-demo/internal/gateway/handler/test"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -15,6 +16,7 @@ func Register(r *server.Hertz) {
 }
 
 func customizedRegister(r *server.Hertz) {
+	r.Any("/test/*path", testhandler.Proxy)
 	// Keep application-owned routes outside generated files so hz update is safe.
 	r.GET("/ping", func(_ context.Context, c *app.RequestContext) {
 		c.String(consts.StatusOK, "pong")
