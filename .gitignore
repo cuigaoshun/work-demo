@@ -31,3 +31,7 @@ generated/
 internal/model/*
 
 *.iml
+
+# Hertz generated route implementations; keep registration and middleware code.
+internal/router/*/*.go
+!internal/router/*/middleware.go
