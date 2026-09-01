@@ -40,7 +40,8 @@ gen-wire:
 	go run github.com/google/wire/cmd/wire gen ./cmd/work
 
 gen-hz:
-	$(HZ) update --idl api/test/test_api.proto --idl api/work/work.proto --module example.com/work-demo -I api
+	$(HZ) update --idl api/http.proto --module example.com/work-demo -I . -I api
+	$(PROTOC) -I . -I api --go_out=. --go_opt=module=example.com/work-demo api/test/test_api.proto
 
 clean-api-clients: clean-api-client-dart clean-api-client-objc clean-api-client-swift clean-api-client-java clean-api-client-typescript clean-api-client-cpp
 

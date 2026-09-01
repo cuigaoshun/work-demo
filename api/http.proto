@@ -1,0 +1,6 @@
+syntax = "proto3";
+
+package api;
+
+import "test/test_api.proto";
+import "work/work.proto";

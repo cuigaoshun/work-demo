@@ -28,6 +28,6 @@ internal/service/*/data/ent/*
 !internal/service/*/data/ent/schema/
 !internal/service/*/data/ent/schema/**
 generated/
-internal/model/
+internal/model/*
 
 *.iml
