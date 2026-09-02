@@ -11,10 +11,10 @@ type Server struct {
 	clients *registry.Registry
 }
 
-func New(opts *Options, clients *registry.Registry, services ...*registry.ServiceRegistry) *Server {
+func New(opts *Options, clients *registry.Registry, services *registry.ServiceRegistry) *Server {
 	registry.SetDefault(clients)
-	if len(services) > 0 {
-		registry.SetDefaultServices(services[0])
+	if services != nil {
+		registry.SetDefaultServices(services)
 	}
 	return &Server{opts: opts, clients: clients}
 }

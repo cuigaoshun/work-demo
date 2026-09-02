@@ -2,6 +2,7 @@ package gateway
 
 import (
 	"context"
+	"example.com/work-demo/internal/gateway/registry"
 	"example.com/work-demo/kitex_gen/user/userservice"
 	"example.com/work-demo/kitex_gen/work/workservice"
 	"example.com/work-demo/pkg/constants"
@@ -12,7 +13,7 @@ import (
 	"github.com/cloudwego/kitex/transport"
 )
 
-func ProvideTestClient(opts *Options) (genericclient.Client, error) {
+func ProvideTestClient(opts *Options) (registry.TestClient, error) {
 	g := generic.BinaryPbGeneric("TestService", "test")
 	return genericclient.NewClient(constants.TestServiceName, g,
 		kitexclient.WithHostPorts(opts.TestAddr),
@@ -20,7 +21,7 @@ func ProvideTestClient(opts *Options) (genericclient.Client, error) {
 	)
 }
 
-func ProvideTestJSONClient(opts *Options) (genericclient.Client, error) {
+func ProvideTestJSONClient(opts *Options) (registry.TestJSONClient, error) {
 	provider, err := generic.NewPbFileProviderWithDynamicGo(
 		"idl/test/test.proto", context.Background(), dproto.Options{}, "idl", "api",
 	)

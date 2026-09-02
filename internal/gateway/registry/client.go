@@ -17,7 +17,17 @@ type Registry struct {
 	work     workservice.Client
 }
 
-func NewClientRegistry(test genericclient.Client, testJSON genericclient.Client, user userservice.Client, work workservice.Client) *Registry {
+// TestClient and TestJSONClient distinguish the two generic clients for Wire
+// while retaining the genericclient.Client interface's behavior.
+type TestClient interface {
+	genericclient.Client
+}
+
+type TestJSONClient interface {
+	genericclient.Client
+}
+
+func NewClientRegistry(test TestClient, testJSON TestJSONClient, user userservice.Client, work workservice.Client) *Registry {
 	return &Registry{test: test, testJSON: testJSON, user: user, work: work}
 }
 
