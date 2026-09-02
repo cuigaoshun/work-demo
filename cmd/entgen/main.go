@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"path/filepath"
 	"runtime"
 
@@ -19,9 +20,23 @@ func moduleRoot() string {
 
 func main() {
 	root := moduleRoot()
-	for _, service := range []string{"user", "work"} {
-		target := filepath.Join(root, "internal", "service", service, "data", "ent")
+	servicesDir := filepath.Join(root, "internal", "service")
+	services, err := os.ReadDir(servicesDir)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, service := range services {
+		if !service.IsDir() {
+			continue
+		}
+		target := filepath.Join(servicesDir, service.Name(), "data", "ent")
 		schema := filepath.Join(target, "schema")
+		if _, err := os.Stat(schema); os.IsNotExist(err) {
+			continue
+		} else if err != nil {
+			log.Fatal(err)
+		}
 		if err := entc.Generate(schema, &gen.Config{Target: target}); err != nil {
 			log.Fatal(err)
 		}
