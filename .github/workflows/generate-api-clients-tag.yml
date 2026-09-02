@@ -76,7 +76,9 @@ jobs:
         run: npm install -g ts-proto
 
       - name: generate api clients
-        run: make gen gen-hz gen-api-clients
+        run: |
+          make gen gen-hz
+          make -f api/Makefile gen-api-clients
 
       - name: commit generated code
         run: |

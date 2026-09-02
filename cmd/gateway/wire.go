@@ -4,8 +4,9 @@
 package gateway
 
 import (
-	"example.com/work-demo/internal/gateway/client"
+	"example.com/work-demo/internal/gateway/registry"
 	server "example.com/work-demo/internal/server/gateway"
+	sumservice "example.com/work-demo/internal/service/sum"
 	"github.com/google/wire"
 )
 
@@ -16,7 +17,9 @@ func NewServer() (*server.Server, error) {
 		server.ProvideTestJSONClient,
 		server.ProvideUserClient,
 		server.ProvideWorkClient,
-		client.NewClientRegistry,
+		sumservice.New,
+		registry.NewServiceRegistry,
+		registry.NewClientRegistry,
 		server.New,
 	))
 }

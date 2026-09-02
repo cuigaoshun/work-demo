@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package sum;
+
+option go_package = "example.com/work-demo/internal/gateway/model/sum";
+
+import "api.proto";
+
+message AddRequest {
+  int64 left = 1 [(api.query) = "left"];
+  int64 right = 2 [(api.query) = "right"];
+}
+
+message AddResponse {
+  int64 result = 1;
+}
+
+service SumService {
+  rpc Add(AddRequest) returns (AddResponse) {
+    option (api.get) = "/sum";
+  }
+}

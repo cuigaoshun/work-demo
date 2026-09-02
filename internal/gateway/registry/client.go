@@ -1,5 +1,5 @@
-// Package client exposes gateway RPC clients to Hertz-generated handler functions.
-package client
+// Package registry exposes gateway dependencies to Hertz-generated handlers.
+package registry
 
 import (
 	"sync"

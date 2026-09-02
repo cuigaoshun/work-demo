@@ -1,18 +1,21 @@
 package gateway
 
 import (
-	"example.com/work-demo/internal/gateway/client"
+	"example.com/work-demo/internal/gateway/registry"
 	"example.com/work-demo/internal/gateway/router"
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 type Server struct {
 	opts    *Options
-	clients *client.Registry
+	clients *registry.Registry
 }
 
-func New(opts *Options, clients *client.Registry) *Server {
-	client.SetDefault(clients)
+func New(opts *Options, clients *registry.Registry, services ...*registry.ServiceRegistry) *Server {
+	registry.SetDefault(clients)
+	if len(services) > 0 {
+		registry.SetDefaultServices(services[0])
+	}
 	return &Server{opts: opts, clients: clients}
 }
 
