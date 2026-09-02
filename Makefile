@@ -29,4 +29,4 @@ gen-wire:
 	go run github.com/google/wire/cmd/wire gen ./cmd/work
 
 gen-hz:
-	sh ./hz_gen.sh
+	sh ./scripts/hz_gen.sh

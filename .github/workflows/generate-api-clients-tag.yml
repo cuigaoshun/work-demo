@@ -75,11 +75,6 @@ jobs:
       - name: install ts-proto plugin
         run: npm install -g ts-proto
 
-      - name: generate api clients
-        run: |
-          make gen gen-hz
-          make -f api/Makefile gen-api-clients
-
       - name: commit generated code
         run: |
           git fetch origin "$RELEASE_BRANCH" || true
@@ -91,28 +86,10 @@ jobs:
             new_branch=true
           fi
 
-          mkdir -p /tmp/realese/generated
-          rsync -a --delete generated/flutter/ /tmp/realese/generated/flutter/
-          rsync -a --delete generated/objc/ /tmp/realese/generated/objc/
-          rsync -a --delete generated/swift/ /tmp/realese/generated/swift/
-          rsync -a --delete generated/java/ /tmp/realese/generated/java/
-          rsync -a --delete generated/typescript/ /tmp/realese/generated/typescript/
-          rsync -a --delete generated/cpp/ /tmp/realese/generated/cpp/
-          rsync -a --delete kitex_gen/ /tmp/realese/kitex_gen/
-          rsync -a --delete internal/model/ /tmp/realese/internal/model/
-          rsync -a --delete internal/handler/ /tmp/realese/internal/handler/
-          rsync -a --delete internal/router/ /tmp/realese/internal/router/
-          rsync -a --delete internal/service/user/data/ent/ /tmp/realese/internal/service/user/data/ent/
-          rsync -a --delete internal/service/work/data/ent/ /tmp/realese/internal/service/work/data/ent/
-          rsync -a cmd/gateway/wire_gen.go /tmp/realese/cmd/gateway/wire_gen.go
-          rsync -a cmd/test/wire_gen.go /tmp/realese/cmd/test/wire_gen.go
-          rsync -a cmd/user/wire_gen.go /tmp/realese/cmd/user/wire_gen.go
-          rsync -a cmd/work/wire_gen.go /tmp/realese/cmd/work/wire_gen.go
-
           cd /tmp/realese
-          git add -f generated kitex_gen internal/model internal/handler internal/router \
-            internal/service/user/data/ent internal/service/work/data/ent \
-            cmd/gateway/wire_gen.go cmd/test/wire_gen.go cmd/user/wire_gen.go cmd/work/wire_gen.go
+          make gen gen-hz
+          make -f api/Makefile gen-api-clients
+          ./scripts/stage-generated.sh
           if git diff --cached --quiet; then
             if [ "$new_branch" = true ]; then
               git push origin "HEAD:$RELEASE_BRANCH"
