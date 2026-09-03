@@ -1,28 +1,60 @@
 name: generate api clients
 
 on:
-  push:
-    tags:
-      - "*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "发布版本号，例如 v1.2.0"
+        required: true
+        type: string
+      source_branch:
+        description: "生成发布分支的源分支"
+        required: true
+        default: main
+        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: generate-api-clients-realese
+  group: generate-api-clients-${{ inputs.tag }}
   cancel-in-progress: true
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     env:
-      RELEASE_BRANCH: realese-${{ github.ref_name }}
+      TAG: ${{ inputs.tag }}
+      SOURCE_BRANCH: ${{ inputs.source_branch }}
+      RELEASE_BRANCH: release-${{ inputs.tag }}
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ github.sha }}
+          ref: ${{ inputs.source_branch }}
+
+      - name: validate release references
+        run: |
+          if ! printf '%s' "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "tag must match vX.Y.Z (received: $TAG)"
+            exit 1
+          fi
+
+          if ! git ls-remote --exit-code --heads origin "$SOURCE_BRANCH" >/dev/null; then
+            echo "source branch does not exist: $SOURCE_BRANCH"
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" >/dev/null; then
+            echo "release branch already exists: $RELEASE_BRANCH"
+            exit 1
+          fi
+
+          if git ls-remote --exit-code --tags origin "refs/tags/$TAG" >/dev/null; then
+            echo "tag already exists: $TAG"
+            exit 1
+          fi
 
       - name: setup go
         uses: actions/setup-go@v5
@@ -77,27 +109,20 @@ jobs:
 
       - name: commit generated code
         run: |
-          git fetch origin "$RELEASE_BRANCH" || true
-          new_branch=false
-          if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
-            git worktree add /tmp/realese "origin/$RELEASE_BRANCH"
-          else
-            git worktree add -b "$RELEASE_BRANCH" /tmp/realese "${{ github.sha }}"
-            new_branch=true
-          fi
-
-          cd /tmp/realese
+          git switch -c "$RELEASE_BRANCH"
           make gen gen-hz
           make -f api/Makefile gen-api-clients
           ./scripts/stage-generated.sh
           if git diff --cached --quiet; then
-            if [ "$new_branch" = true ]; then
-              git push origin "HEAD:$RELEASE_BRANCH"
-            fi
             echo "no generated changes"
-            exit 0
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@github.com"
+            git commit -m "generate API clients for $TAG"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@github.com"
-          git commit -m "generate API clients for ${{ github.ref_name }}"
           git push origin "HEAD:$RELEASE_BRANCH"
+
+      - name: create tag on release branch
+        run: |
+          git tag "$TAG"
+          git push origin "refs/tags/$TAG"

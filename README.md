@@ -91,9 +91,9 @@ root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local
 
 ## CI 与发布分支
 
-`.github/workflows/generate-api-clients-tag.yml` 监听 tag 推送。每次发布 tag 时，CI 会安装代码生成工具，重新生成各语言 API 客户端、RPC 代码、网关代码、Ent 代码和依赖注入代码，然后把这些生成产物同步到发布分支。
+`.github/workflows/generate-api-clients-tag.yml` 通过 GitHub Actions 的 `Run workflow` 手动触发。运行时输入版本号（例如 `v1.2.0`）和源分支（默认 `main`），CI 会安装代码生成工具，重新生成各语言 API 客户端、RPC 代码、网关代码、Ent 代码和依赖注入代码。
 
-发布分支名称为 `realese-<tag>`，例如推送 `v1.2.0` 后生成 `realese-v1.2.0`。如果分支不存在，CI 会从本次 tag 创建；如果已经存在，则在原分支上更新。只有生成内容发生变化时才提交，提交信息为 `generate API clients for <tag>`。
+流程会先创建 `release-<tag>` 发布分支，例如 `release-v1.2.0`，并把生成结果提交到该分支；如果没有生成内容变化，则直接使用源分支的提交。随后 tag 会创建在发布分支的最终提交上。已有同名分支或 tag 时流程会失败，不会覆盖已发布结果。
 
 该分支专门保存与某个发布版本对应的生成结果，便于下游客户端按 tag 获取稳定代码；业务源码仍以主开发分支为准。
 
