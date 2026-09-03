@@ -3,7 +3,7 @@ package router
 import (
 	"context"
 
-	testhandler "example.com/work-demo/internal/gateway/handler/test"
+	testhandler "example.com/work-demo/internal/gateway/handler/testapi"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
