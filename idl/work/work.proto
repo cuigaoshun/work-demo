@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package work;
 
-option go_package = "example.com/work-demo/kitex_gen/work";
+option go_package = "example.com/work-demo/service/work/kitex_gen/work";
 
 service WorkService {
   rpc GetWork(GetWorkRequest) returns (GetWorkResponse);

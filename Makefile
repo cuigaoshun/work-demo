@@ -14,19 +14,19 @@ install-go-tools:
 gen: gen-kitex gen-ent gen-wire
 
 gen-kitex:
-	rm -rf kitex_gen/test kitex_gen/user kitex_gen/work
-	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl -I api idl/test/test.proto
-	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl idl/user/user.proto
-	$(KITEX) -module example.com/work-demo -gen-path kitex_gen -I idl idl/work/work.proto
+	rm -rf service/test/kitex_gen/test service/user/kitex_gen/user service/work/kitex_gen/work
+	cd service/test && $(KITEX) -module example.com/work-demo/service/test -gen-path kitex_gen -I ../../idl -I ../../api ../../idl/test/test.proto
+	cd service/user && $(KITEX) -module example.com/work-demo/service/user -gen-path kitex_gen -I ../../idl ../../idl/user/user.proto
+	cd service/work && $(KITEX) -module example.com/work-demo/service/work -gen-path kitex_gen -I ../../idl ../../idl/work/work.proto
 
 gen-ent:
 	go run ./cmd/entgen
 
 gen-wire:
 	go run github.com/google/wire/cmd/wire gen ./cmd/gateway
-	go run github.com/google/wire/cmd/wire gen ./cmd/test
-	go run github.com/google/wire/cmd/wire gen ./cmd/user
-	go run github.com/google/wire/cmd/wire gen ./cmd/work
+	go run github.com/google/wire/cmd/wire gen ./service/test/cmd
+	go run github.com/google/wire/cmd/wire gen ./service/user/cmd
+	go run github.com/google/wire/cmd/wire gen ./service/work/cmd
 
 gen-hz:
 	sh ./scripts/hz_gen.sh

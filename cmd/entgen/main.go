@@ -20,17 +20,9 @@ func moduleRoot() string {
 
 func main() {
 	root := moduleRoot()
-	servicesDir := filepath.Join(root, "internal", "service")
-	services, err := os.ReadDir(servicesDir)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, service := range services {
-		if !service.IsDir() {
-			continue
-		}
-		target := filepath.Join(servicesDir, service.Name(), "data", "ent")
+	services := []string{"user", "work"}
+	for _, serviceName := range services {
+		target := filepath.Join(root, "service", serviceName, "internal", "service", "data", "ent")
 		schema := filepath.Join(target, "schema")
 		if _, err := os.Stat(schema); os.IsNotExist(err) {
 			continue

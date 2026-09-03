@@ -22,9 +22,7 @@ HTTP Gateway (8080)
             `-- SumService in gateway process
 ```
 
-当前所有服务代码都在一个仓库里，便于共享 Protobuf、生成代码、配置和本地调试。服务之间通过 RPC 通信，网关不直接依赖业务服务的数据库。
-
-当服务数量增加时，可以沿着现有边界拆分：将某个服务的 `cmd`、`internal/service`、`internal/server`、IDL 和生成代码迁移到独立仓库，网关只保留对应的 RPC client 和协议依赖；调用方式不需要改变。
+当前服务代码仍在同一个仓库中，但 `user`、`work`、`test` 分别是独立 Go module，由根目录 `go.work` 统一管理。每个服务的业务实现位于自己的 `internal` 目录中，其他 module 无法直接引用；服务之间通过 RPC 通信，网关不直接依赖业务服务的数据库。
 
 ## 三类 API 设计
 
@@ -45,11 +43,11 @@ HTTP Gateway (8080)
 ```text
 api/                         HTTP API Protobuf（网关输入）
 idl/                         RPC Protobuf（服务输入）
-generated-rpc/                RPC 生成的 client/server 代码
 internal/gateway/            网关路由、handler、RPC client registry
-internal/service/<name>/     服务业务逻辑、repository 和 Ent 数据层
-internal/server/<name>/      RPC/HTTP server 装配与启动
-cmd/<name>/                  各进程的 Cobra 命令和 Wire 依赖注入
+service/user/                用户服务 module、私有实现和生成代码
+service/work/                作品服务 module、私有实现和生成代码
+service/test/                测试服务 module 和生成代码
+go.work                     本地联合管理根 module 与三个服务 module
 cmd/entgen/                  扫描各服务 schema 并生成 Ent 代码
 sql/init.sql                 示例 MySQL 表结构和种子数据
 ```
@@ -58,7 +56,7 @@ sql/init.sql                 示例 MySQL 表结构和种子数据
 
 ## ORM 与代码生成
 
-数据访问使用 Ent。每个服务在 `internal/service/<service>/data/ent/schema` 编写 schema，`cmd/entgen` 会扫描所有服务并把生成结果写回同一服务的 `data/ent` 目录。这样数据库模型和 repository 仍归服务自己所有，不会被网关共享。
+数据访问使用 Ent。每个服务在 `service/<service>/internal/service/data/ent/schema` 编写 schema，`cmd/entgen` 会扫描 user、work 两个服务并把生成结果写回各自 module。这样数据库模型和 repository 仍归服务自己所有，不会被网关共享。
 
 常用生成命令：
 
@@ -79,7 +77,7 @@ HTTP 路由和 handler 骨架使用仓库 Makefile 中的专用生成目标更�
 
 ## 启动与配置
 
-服务从根目录 `cmd` 启动：`gateway` 提供 HTTP 接口，`test`、`user`、`work` 提供 RPC 接口。默认地址分别为 `127.0.0.1:8080`、`127.0.0.1:8888`、`127.0.0.1:8889` 和 `127.0.0.1:8890`，本地联调时分别启动四个进程。
+服务从各自 module 的 `cmd` 启动：根目录 `cmd` 中的 `gateway` 提供 HTTP 接口，`service/test/cmd`、`service/user/cmd`、`service/work/cmd` 提供 RPC 接口。默认地址分别为 `127.0.0.1:8080`、`127.0.0.1:8888`、`127.0.0.1:8889` 和 `127.0.0.1:8890`，本地联调时分别启动四个进程。
 
 用户服务和作品服务默认使用 MySQL DSN：
 

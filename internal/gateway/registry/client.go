@@ -4,8 +4,8 @@ package registry
 import (
 	"sync"
 
-	"example.com/work-demo/kitex_gen/user/userservice"
-	"example.com/work-demo/kitex_gen/work/workservice"
+	"example.com/work-demo/service/user/kitex_gen/user/userservice"
+	"example.com/work-demo/service/work/kitex_gen/work/workservice"
 	"github.com/cloudwego/kitex/client/genericclient"
 )
 

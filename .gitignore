@@ -24,9 +24,15 @@
 thrift_streaming/output
 kitex_gen/
 **/wire_gen.go
-internal/service/*/data/ent/*
-!internal/service/*/data/ent/schema/
-!internal/service/*/data/ent/schema/**
+**/internal/service/data/ent/*
+!**/internal/service/data/ent/schema/
+!**/internal/service/data/ent/schema/**
+!service/user/kitex_gen/
+!service/user/kitex_gen/**
+!service/work/kitex_gen/
+!service/work/kitex_gen/**
+!service/test/kitex_gen/
+!service/test/kitex_gen/**
 generated/
 internal/gateway/model/*
 

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package test;
 
-option go_package = "example.com/work-demo/kitex_gen/test";
+option go_package = "example.com/work-demo/service/test/kitex_gen/test";
 
 import "test/test_api.proto";
 

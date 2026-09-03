@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package user;
 
-option go_package = "example.com/work-demo/kitex_gen/user";
+option go_package = "example.com/work-demo/service/user/kitex_gen/user";
 
 service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse);
