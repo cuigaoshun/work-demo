@@ -30,14 +30,23 @@ func main() {
 		if !service.IsDir() {
 			continue
 		}
-		target := filepath.Join(servicesDir, service.Name(), "data", "ent")
+		target := filepath.Join(servicesDir, service.Name(), "internal", "data", "ent")
 		schema := filepath.Join(target, "schema")
 		if _, err := os.Stat(schema); os.IsNotExist(err) {
 			continue
 		} else if err != nil {
 			log.Fatal(err)
 		}
-		if err := entc.Generate(schema, &gen.Config{Target: target}); err != nil {
+
+		// entc creates a temporary loader package in the working directory. It
+		// must live below this service's private internal boundary to load schema.
+		if err := os.Chdir(target); err != nil {
+			log.Fatal(err)
+		}
+		if err := entc.Generate("./schema", &gen.Config{Target: "."}); err != nil {
+			log.Fatal(err)
+		}
+		if err := os.Chdir(root); err != nil {
 			log.Fatal(err)
 		}
 	}

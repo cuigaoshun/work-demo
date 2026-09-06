@@ -24,15 +24,15 @@
 thrift_streaming/output
 kitex_gen/
 **/wire_gen.go
-internal/service/*/data/ent/*
-!internal/service/*/data/ent/schema/
-!internal/service/*/data/ent/schema/**
+internal/service/*/internal/data/ent/*
+!internal/service/*/internal/data/ent/schema/
+!internal/service/*/internal/data/ent/schema/**
 generated/
-internal/gateway/model/*
+internal/gateway/internal/model/*
 
 *.iml
 
 # Hertz generated route implementations; keep registration and middleware code.
-internal/gateway/router/register.go
-internal/gateway/router/*/*.go
-!internal/gateway/router/*/middleware.go
+internal/gateway/internal/router/register.go
+internal/gateway/internal/router/*/*.go
+!internal/gateway/internal/router/*/middleware.go

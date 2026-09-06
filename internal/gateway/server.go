@@ -1,0 +1,27 @@
+package gateway
+
+import (
+	"example.com/work-demo/internal/gateway/internal/registry"
+	"example.com/work-demo/internal/gateway/internal/router"
+	"github.com/cloudwego/hertz/pkg/app/server"
+)
+
+type Server struct {
+	opts    *Options
+	clients *registry.Registry
+}
+
+func New(opts *Options, clients *registry.Registry, services *registry.ServiceRegistry) *Server {
+	registry.SetDefault(clients)
+	if services != nil {
+		registry.SetDefaultServices(services)
+	}
+	return &Server{opts: opts, clients: clients}
+}
+
+func (s *Server) Run() error {
+	h := server.Default(server.WithHostPorts(s.opts.Addr))
+	router.Register(h)
+	h.Spin()
+	return nil
+}
