@@ -14,6 +14,7 @@ on:
         type: string
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -123,6 +124,9 @@ jobs:
           git push origin "HEAD:$RELEASE_BRANCH"
 
       - name: create tag on release branch
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           git tag "$TAG"
           git push origin "refs/tags/$TAG"
+          gh workflow run release-binaries.yml --ref "$TAG"
