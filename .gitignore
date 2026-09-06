@@ -36,3 +36,6 @@ internal/api/*
 internal/gateway/router/register.go
 internal/gateway/router/*/*.go
 !internal/gateway/router/*/middleware.go
+
+# Generated protobuf fixtures used by README examples
+scripts/*.bin

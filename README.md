@@ -123,39 +123,39 @@ curl -X POST http://127.0.0.1:8080/testjson/TestFields \
   -d '{"int32_value":-7,"string_value":"compatibility","enum_value":1}'
 ```
 
-`/testBind` 的二进制请求和响应可使用 `protoc` 验证：
+`/testBind` 的二进制请求和响应可使用 `protoc` 验证，生成文件统一放在 `scripts/`：
 
 ```bash
-protoc -I api --encode=test.TestBindRequest api/test/test_api.proto > test_bind_request.bin <<'EOF'
+protoc -I api --encode=test.TestBindRequest api/test/test_api.proto > scripts/test_bind_request.bin <<'EOF'
 id: 42
 name: "protobuf body"
 EOF
 
 curl -X POST http://127.0.0.1:8080/testBind \
   -H 'Content-Type: application/x-protobuf' \
-  --data-binary @test_bind_request.bin -o test_bind_response.bin
+  --data-binary @scripts/test_bind_request.bin -o scripts/test_bind_response.bin
 
 protoc -I api --decode=test.TestBindResponse \
-  api/test/test_api.proto < test_bind_response.bin
+  api/test/test_api.proto < scripts/test_bind_response.bin
 ```
 
 `name` 最长为 20 个字符。以下 21 字符请求应返回 `400`：
 
 ```bash
-protoc -I api --encode=test.TestBindRequest api/test/test_api.proto > test_bind_invalid_request.bin <<'EOF'
+protoc -I api --encode=test.TestBindRequest api/test/test_api.proto > scripts/test_bind_invalid_request.bin <<'EOF'
 id: 42
 name: "123456789012345678901"
 EOF
 
 curl -i -X POST http://127.0.0.1:8080/testBind \
   -H 'Content-Type: application/x-protobuf' \
-  --data-binary @test_bind_invalid_request.bin
+  --data-binary @scripts/test_bind_invalid_request.bin
 ```
 
 protobuf 二进制泛化调用可按下面方式构造和查看数据：
 
 ```bash
-protoc -I api --encode=test.TestFieldsRequest api/test/test_api.proto > request.bin <<'EOF'
+protoc -I api --encode=test.TestFieldsRequest api/test/test_api.proto > scripts/request.bin <<'EOF'
 int32_value: -7
 string_value: "compatibility"
 enum_value: COMPATIBILITY_ENUM_FIRST
@@ -165,9 +165,9 @@ EOF
 
 curl -X POST http://127.0.0.1:8080/test/TestFields \
   -H 'Content-Type: application/protobuf' \
-  --data-binary @request.bin -o response.bin
+  --data-binary @scripts/request.bin -o scripts/response.bin
 
-protoc -I api --decode=test.TestFieldsResponse api/test/test_api.proto < response.bin
+protoc -I api --decode=test.TestFieldsResponse api/test/test_api.proto < scripts/response.bin
 ```
 
 ## 代码生成
