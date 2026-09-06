@@ -10,18 +10,17 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
-// TestFields .
-// @router /test [POST]
-func TestFields(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req testapi.TestFieldsRequest
-	err = c.BindAndValidate(&req)
-	if err != nil {
+// TestBind binds a protobuf request body and returns its fields as protobuf.
+// @router /testBind [POST]
+func TestBind(ctx context.Context, c *app.RequestContext) {
+	var req testapi.TestBindRequest
+	if err := c.BindAndValidate(&req); err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
 
-	resp := new(testapi.TestFieldsResponse)
-
-	c.JSON(consts.StatusOK, resp)
+	c.ProtoBuf(consts.StatusOK, &testapi.TestBindResponse{
+		Id:   req.GetId(),
+		Name: req.GetName(),
+	})
 }

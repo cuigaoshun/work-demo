@@ -31,7 +31,7 @@ HTTP client                   | gateway :8080        |
 
 | 协议文件 | 用途 | 当前接口 |
 | --- | --- | --- |
-| `api/` | Hertz HTTP 契约、路由注解，以及测试泛化调用共享的消息定义 | `GET /sum`、`GET /works/:workID`、`POST /testm` |
+| `api/` | Hertz HTTP 契约、路由注解，以及测试泛化调用共享的消息定义 | `GET /sum`、`GET /works/:workID`、`POST /testBind` |
 | `idl/` | Kitex RPC 服务契约 | `TestService.TestFields`、`UserService.GetUser`、`WorkService.GetWork` |
 
 `api/test/test_api.proto` 同时被测试 RPC IDL 引用，因此它定义的 `TestFieldsRequest` 和 `TestFieldsResponse` 是测试服务的共享消息类型。
@@ -44,7 +44,7 @@ HTTP client                   | gateway :8080        |
 | `/{method} /test/*path` | 将原始 protobuf 二进制请求泛化转发到 `TestService` |
 | `/{method} /testjson/*path` | 根据 `api/test/test_api.proto` descriptor 将 JSON 泛化转发到 `TestService` |
 
-`/test/*path` 与 `/testjson/*path` 的路径末段必须是 RPC 方法名，例如 `/test/TestFields`。生成的 `POST /testm` handler 目前只是 Hertz 骨架，并不调用下游服务；联调测试服务应使用上述两条泛化转发路由。
+`/test/*path` 与 `/testjson/*path` 的路径末段必须是 RPC 方法名，例如 `/test/TestFields`。`POST /testBind` 是网关本地的 protobuf 绑定测试：它使用 `BindAndValidate` 解码请求体，并以 protobuf 回显 `TestBindResponse`；请求头必须是 `Content-Type: application/x-protobuf`。
 
 ## 目录
 
@@ -121,6 +121,35 @@ curl http://127.0.0.1:8080/works/1
 curl -X POST http://127.0.0.1:8080/testjson/TestFields \
   -H 'Content-Type: application/json' \
   -d '{"int32_value":-7,"string_value":"compatibility","enum_value":1}'
+```
+
+`/testBind` 的二进制请求和响应可使用 `protoc` 验证：
+
+```bash
+protoc -I api --encode=test.TestBindRequest api/test/test_api.proto > test_bind_request.bin <<'EOF'
+id: 42
+name: "protobuf body"
+EOF
+
+curl -X POST http://127.0.0.1:8080/testBind \
+  -H 'Content-Type: application/x-protobuf' \
+  --data-binary @test_bind_request.bin -o test_bind_response.bin
+
+protoc -I api --decode=test.TestBindResponse \
+  api/test/test_api.proto < test_bind_response.bin
+```
+
+`name` 最长为 20 个字符。以下 21 字符请求应返回 `400`：
+
+```bash
+protoc -I api --encode=test.TestBindRequest api/test/test_api.proto > test_bind_invalid_request.bin <<'EOF'
+id: 42
+name: "123456789012345678901"
+EOF
+
+curl -i -X POST http://127.0.0.1:8080/testBind \
+  -H 'Content-Type: application/x-protobuf' \
+  --data-binary @test_bind_invalid_request.bin
 ```
 
 protobuf 二进制泛化调用可按下面方式构造和查看数据：

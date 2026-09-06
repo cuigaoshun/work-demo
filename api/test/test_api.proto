@@ -44,6 +44,18 @@ message TestFieldsResponse {
   map<string, CompatibilityMessage> nested_map = 25; // 回传嵌套消息映射。
 }
 
+// TestBindRequest 用于验证 Hertz 对 protobuf 二进制请求体的绑定。
+message TestBindRequest {
+  int64 id = 1;
+  string name = 2 [(api.vd) = "len($) <= 20"];
+}
+
+// TestBindResponse 回传已绑定的请求字段。
+message TestBindResponse {
+  int64 id = 1;
+  string name = 2;
+}
+
 // CompatibilityEnum 用于测试 protobuf 枚举编码。
 enum CompatibilityEnum {
   COMPATIBILITY_ENUM_UNSPECIFIED = 0;
@@ -60,7 +72,7 @@ message CompatibilityMessage {
 }
 
 service TestService {
-  rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse) {
-    option (api.post) = "/testm";
+  rpc TestBind(TestBindRequest) returns (TestBindResponse) {
+    option (api.post) = "/testBind";
   }
 }

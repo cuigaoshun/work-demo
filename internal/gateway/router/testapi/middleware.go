@@ -9,7 +9,7 @@ func rootMw() []app.HandlerFunc {
 	return nil
 }
 
-func _testfieldsMw() []app.HandlerFunc {
+func _testbindMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
