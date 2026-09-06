@@ -97,6 +97,8 @@ root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local
 
 该分支专门保存与某个发布版本对应的生成结果，便于下游客户端按 tag 获取稳定代码；业务源码仍以主开发分支为准。
 
+标签推送后，`.github/workflows/release-binaries.yml` 会自动为该标签创建 GitHub Release，并上传 Linux amd64 的二进制压缩包。可在仓库的 **Releases** 页面下载 `work-demo-<tag>-linux-amd64.tar.gz`。
+
 ## curl 测试
 
 | 场景 | 命令 | 说明 |
