@@ -1,7 +1,7 @@
 package registry
 
 import (
-	sumservice "example.com/work-demo/internal/gateway/internal/biz/sum"
+	sumservice "example.com/work-demo/internal/gateway/biz/sum"
 	"sync"
 )
 

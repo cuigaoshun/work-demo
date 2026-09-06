@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	client "example.com/work-demo/internal/gateway/internal/registry"
+	client "example.com/work-demo/internal/gateway/registry"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )

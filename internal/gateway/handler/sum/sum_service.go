@@ -5,8 +5,8 @@ package sum
 import (
 	"context"
 
-	"example.com/work-demo/internal/gateway/internal/registry"
 	sum "example.com/work-demo/internal/gateway/model/sum"
+	"example.com/work-demo/internal/gateway/registry"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )

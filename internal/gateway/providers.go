@@ -2,7 +2,7 @@ package gateway
 
 import (
 	"context"
-	"example.com/work-demo/internal/gateway/internal/registry"
+	"example.com/work-demo/internal/gateway/registry"
 	"example.com/work-demo/kitex_gen/user/userservice"
 	"example.com/work-demo/kitex_gen/work/workservice"
 	"example.com/work-demo/pkg/constants"
