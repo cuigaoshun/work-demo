@@ -20,7 +20,9 @@ func New(addr string, client *ent.Client, service *userserviceimpl.Service) *Ser
 }
 
 func (s *Server) Run() error {
-	defer s.client.Close()
+	defer func(client *ent.Client) {
+		_ = client.Close()
+	}(s.client)
 
 	addr, err := net.ResolveTCPAddr("tcp", s.addr)
 	if err != nil {

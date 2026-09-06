@@ -1,8 +1,9 @@
 package registry
 
 import (
-	sumservice "example.com/work-demo/internal/gateway/biz/sum"
 	"sync"
+
+	sumservice "example.com/work-demo/internal/gateway/biz/sum"
 )
 
 type ServiceRegistry struct{ sum *sumservice.Service }
