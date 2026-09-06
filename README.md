@@ -1,131 +1,167 @@
 # work-demo
 
-这是一个以 **Protobuf + Ent** 为核心的 Go 服务框架示例。它把 HTTP 网关、RPC 服务和数据访问层放在同一个仓库中，先保持开发和联调简单，再为服务拆分、独立部署留下边界。
+`work-demo` 是一个单仓库的 Go 微服务示例，使用 Hertz 提供 HTTP 网关、Kitex 提供 RPC 服务、Ent 访问 MySQL，并通过 Protobuf 管理 HTTP 与 RPC 协议。
 
-## 整体思路
+## 架构
 
-请求从网关进入，网关根据接口类型选择不同的处理方式：
-
-```text
-HTTP Client
-    |
-    v
-HTTP Gateway (8080)
-    |-- 业务编排接口 /works/:workID
-    |       |-- RPC -> 作品服务 (8890) -> works
-    |       `-- RPC -> 用户服务 (8889) -> users
-    |
-    |-- 泛化转发 /test/*、/testjson/*
-    |       `-- Generic RPC -> TestService (8888)
-    |
-    `-- 网关本地业务 /sum
-            `-- SumService in gateway process
-```
-
-当前所有服务代码都在一个仓库里，便于共享 Protobuf、生成代码、配置和本地调试。服务之间通过 RPC 通信，网关不直接依赖业务服务的数据库。
-
-当服务数量增加时，可以沿着现有边界拆分：将某个服务的 `cmd`、`internal/service`、`internal/server`、IDL 和生成代码迁移到独立仓库，网关只保留对应的 RPC client 和协议依赖；调用方式不需要改变。
-
-## 三类 API 设计
-
-| API 定义 | 定位 | 请求链路 | 适用场景 |
-| --- | --- | --- | --- |
-| `api/work/work.proto` | 作品服务的强类型业务接口 | 网关调用作品服务，再调用用户服务，组装聚合响应 | 需要跨服务编排、聚合和协议适配的业务接口 |
-| `api/test/test_api.proto` | 泛化调用、透明转发 | 网关按路径取得方法名，将 protobuf 或 JSON 请求转发到 TestService | 网关只负责鉴权、路由、限流和协议转换，下游负责业务逻辑 |
-| `api/sum/sum.proto` | 网关本地业务 | 网关进程内直接执行 `SumService.Add` | 轻量、低依赖或网关专属的业务逻辑 |
-
-`api/work/work.proto` 与 `idl/work/work.proto` 分别描述网关 HTTP 契约和作品服务 RPC 契约。`GET /works/:workID` 会先调用 `WorkService.GetWork` 查询作品，再调用 `UserService.GetUser` 查询用户，最后由网关组装响应。
-
-`api/test/test_api.proto` 与 `idl/test/test.proto` 配合使用。`/test/*` 进行 protobuf 二进制透明转发，`/testjson/*` 使用 descriptor 完成 JSON 泛化编解码；新增方法通常不需要新增网关业务 handler。
-
-如果网关本地业务逐渐变复杂，可以保持 Protobuf 契约不变，再迁移到独立 RPC 服务，HTTP API 无需变化。
-
-## 目录职责
+仓库包含 4 个独立进程。服务发现尚未接入，网关通过固定的本地地址直连下游 Kitex 服务。
 
 ```text
-api/                         HTTP API Protobuf（网关输入）
-idl/                         RPC Protobuf（服务输入）
-generated-rpc/                RPC 生成的 client/server 代码
-internal/gateway/            网关路由、handler、RPC client registry
-internal/service/<name>/     服务业务逻辑、repository 和 Ent 数据层
-internal/server/<name>/      RPC/HTTP server 装配与启动
-cmd/<name>/                  各进程的 Cobra 命令和 Wire 依赖注入
-cmd/entgen/                  扫描各服务 schema 并生成 Ent 代码
-sql/init.sql                 示例 MySQL 表结构和种子数据
+                              +----------------------+
+HTTP client                   | gateway :8080        |
+    |                          | Hertz                |
+    +------------------------> |                      |
+                               | GET /sum             |---> gateway-local SumService
+                               | GET /works/:workID   |---> WorkService :8890 --> MySQL.works
+                               |                      |         |
+                               |                      |         +--> UserService :8889 --> MySQL.users
+                               | /test/*              |---> TestService :8888 (binary protobuf)
+                               | /testjson/*          |---> TestService :8888 (generic JSON)
+                               +----------------------+
 ```
 
-网关的生成路由位于 `internal/gateway/router` 和 `internal/gateway/handler`。手写的透明代理和 `/ping` 放在自定义注册逻辑中，避免重新生成路由时被覆盖。
+- `gateway`：Hertz HTTP 网关。初始化下游 RPC client 和网关本地 `SumService`，再注册生成路由与自定义路由。
+- `test`：Kitex 测试服务，实现 `TestFields` 字段兼容性回显。
+- `user`：Kitex 用户服务，使用本服务的 Ent repository 查询 `users` 表。
+- `work`：Kitex 作品服务，使用本服务的 Ent repository 查询 `works` 表。
 
-## ORM 与代码生成
+网关不直接访问数据库。`GET /works/:workID` 由网关先调用 `WorkService.GetWork`，再按返回的 `user_id` 调用 `UserService.GetUser`，最后将结果适配为 HTTP 响应。
 
-数据访问使用 Ent。每个服务在 `internal/service/<service>/data/ent/schema` 编写 schema，`cmd/entgen` 会扫描所有服务并把生成结果写回同一服务的 `data/ent` 目录。这样数据库模型和 repository 仍归服务自己所有，不会被网关共享。
+## 协议与路由
 
-常用生成命令：
+| 协议文件 | 用途 | 当前接口 |
+| --- | --- | --- |
+| `api/` | Hertz HTTP 契约、路由注解，以及测试泛化调用共享的消息定义 | `GET /sum`、`GET /works/:workID`、`POST /testm` |
+| `idl/` | Kitex RPC 服务契约 | `TestService.TestFields`、`UserService.GetUser`、`WorkService.GetWork` |
+
+`api/test/test_api.proto` 同时被测试 RPC IDL 引用，因此它定义的 `TestFieldsRequest` 和 `TestFieldsResponse` 是测试服务的共享消息类型。
+
+除 Hertz 从 `api/` 生成的路由外，网关还注册以下应用自有路由：
+
+| 路由 | 处理方式 |
+| --- | --- |
+| `GET /ping` | 直接返回 `pong` |
+| `/{method} /test/*path` | 将原始 protobuf 二进制请求泛化转发到 `TestService` |
+| `/{method} /testjson/*path` | 根据 `api/test/test_api.proto` descriptor 将 JSON 泛化转发到 `TestService` |
+
+`/test/*path` 与 `/testjson/*path` 的路径末段必须是 RPC 方法名，例如 `/test/TestFields`。生成的 `POST /testm` handler 目前只是 Hertz 骨架，并不调用下游服务；联调测试服务应使用上述两条泛化转发路由。
+
+## 目录
+
+```text
+api/                              HTTP Protobuf 定义和 Hertz 注解
+idl/                              Kitex RPC Protobuf 定义
+kitex_gen/                        Kitex 从 idl/ 生成的 Go 代码
+cmd/                              Cobra 命令入口（gateway、test、user、work）
+internal/gateway/                 网关、RPC client registry、Hertz handler 与路由
+internal/service/<service>/       服务实现
+  internal/biz/                   RPC 业务逻辑
+  internal/data/                  Ent client、repository、schema 和生成代码
+  internal/transport/             Kitex server 装配
+sql/init.sql                      MySQL 表结构和示例数据
+scripts/hz_gen.sh                 Hertz 路由和 handler 生成脚本
+```
+
+各服务使用 Wire 生成依赖装配代码：`internal/gateway/wire_gen.go` 与 `internal/service/*/wire_gen.go`。`wire.go` 仅在 `wireinject` 构建标签下参与编译。
+
+## 本地运行
+
+### 前置条件
+
+- Go `1.27.0`（以 `go.mod` 为准）
+- MySQL
+- 仅在重新生成代码时需要：`protoc`、Kitex、Hertz 和 Wire
+
+初始化数据库并导入示例数据：
 
 ```bash
-# 安装代码生成工具
-make install
-
-# 生成 RPC、Ent、Wire 代码
-make gen
-
-# 生成跨语言客户端（按需安装对应 protoc 插件）
-make -C api gen-api-clients
+mysql -uroot -p123456 -e 'CREATE DATABASE IF NOT EXISTS test'
+mysql -uroot -p123456 test < sql/init.sql
 ```
 
-HTTP 路由和 handler 骨架使用仓库 Makefile 中的专用生成目标更新。
-
-生成链路的输入和输出是分开的：`idl/*.proto` 生成 RPC 代码，`api/*.proto` 生成网关代码；修改 IDL 后重新执行对应命令即可。提交代码时应同时提交需要运行的生成结果，保证没有生成工具的环境也能编译。
-
-## 启动与配置
-
-服务从根目录 `cmd` 启动：`gateway` 提供 HTTP 接口，`test`、`user`、`work` 提供 RPC 接口。默认地址分别为 `127.0.0.1:8080`、`127.0.0.1:8888`、`127.0.0.1:8889` 和 `127.0.0.1:8890`，本地联调时分别启动四个进程。
-
-用户服务和作品服务默认使用 MySQL DSN：
+`user` 与 `work` 默认使用以下 DSN；可用同一个 `MYSQL_DSN` 环境变量覆盖两个服务的连接配置：
 
 ```text
 root:123456@tcp(127.0.0.1:3306)/test?charset=utf8mb4&parseTime=True&loc=Local
 ```
 
-可通过环境变量 `MYSQL_DSN` 覆盖。启动数据库后执行 `sql/init.sql`，即可使用 user=1、work=1 示例数据。
-
-## CI 与发布分支
-
-`.github/workflows/generate-api-clients-tag.yml` 通过 GitHub Actions 的 `Run workflow` 手动触发。运行时输入版本号（例如 `v1.2.0`）和源分支（默认 `main`），CI 会安装代码生成工具，重新生成各语言 API 客户端、RPC 代码、网关代码、Ent 代码和依赖注入代码。
-
-流程会先创建 `release-<tag>` 发布分支，例如 `release-v1.2.0`，并把生成结果提交到该分支；如果没有生成内容变化，则直接使用源分支的提交。随后 tag 会创建在发布分支的最终提交上。已有同名分支或 tag 时流程会失败，不会覆盖已发布结果。
-
-该分支专门保存与某个发布版本对应的生成结果，便于下游客户端按 tag 获取稳定代码；业务源码仍以主开发分支为准。
-
-标签推送后，`.github/workflows/release-binaries.yml` 会自动为该标签创建 GitHub Release，并上传 Linux amd64 的二进制压缩包。可在仓库的 **Releases** 页面下载 `work-demo-<tag>-linux-amd64.tar.gz`。
-
-## curl 测试
-
-| 场景 | 命令 | 说明 |
-| --- | --- | --- |
-| 网关本地业务 | `curl 'http://127.0.0.1:8080/sum?left=12&right=30'` | 返回 `{"result":42}` |
-| 作品服务聚合接口 | `curl 'http://127.0.0.1:8080/works/1'` | 网关调用作品服务和用户服务后返回聚合结果 |
-| protobuf 泛化转发 | `curl -X POST 'http://127.0.0.1:8080/test/TestFields' -H 'Content-Type: application/protobuf' --data-binary @request.bin -o response.bin` | 将二进制请求透明转发到测试服务 |
-| JSON 泛化转发 | `curl -X POST 'http://127.0.0.1:8080/testjson/TestFields' -H 'Content-Type: application/json' -d '{"int32_value":-7,"string_value":"compatibility","enum_value":1}'` | 将 JSON 请求泛化转发到测试服务 |
-
-生成 protobuf 请求文件：
+在四个终端中分别启动：
 
 ```bash
-cat <<'EOF' | protoc -I api \
-  --encode=test.TestFieldsRequest \
-  api/test/test_api.proto > request.bin
+go run ./cmd test
+go run ./cmd user
+go run ./cmd work
+go run ./cmd gateway
+```
+
+默认监听地址如下：
+
+| 进程 | 地址 |
+| --- | --- |
+| gateway | `127.0.0.1:8080` |
+| test | `127.0.0.1:8888` |
+| user | `127.0.0.1:8889` |
+| work | `127.0.0.1:8890` |
+
+可以通过 `go run ./cmd --help` 查看可用子命令。当前地址由代码中的默认选项提供，尚未暴露为命令行参数或环境变量。
+
+## 验证接口
+
+```bash
+# 健康检查
+curl http://127.0.0.1:8080/ping
+
+# 网关本地业务
+curl 'http://127.0.0.1:8080/sum?left=12&right=30'
+
+# 网关编排 work 和 user 服务
+curl http://127.0.0.1:8080/works/1
+
+# JSON 泛化转发到 TestService
+curl -X POST http://127.0.0.1:8080/testjson/TestFields \
+  -H 'Content-Type: application/json' \
+  -d '{"int32_value":-7,"string_value":"compatibility","enum_value":1}'
+```
+
+protobuf 二进制泛化调用可按下面方式构造和查看数据：
+
+```bash
+protoc -I api --encode=test.TestFieldsRequest api/test/test_api.proto > request.bin <<'EOF'
 int32_value: -7
 string_value: "compatibility"
 enum_value: COMPATIBILITY_ENUM_FIRST
 repeated_strings: "first"
 repeated_strings: "second"
 EOF
+
+curl -X POST http://127.0.0.1:8080/test/TestFields \
+  -H 'Content-Type: application/protobuf' \
+  --data-binary @request.bin -o response.bin
+
+protoc -I api --decode=test.TestFieldsResponse api/test/test_api.proto < response.bin
 ```
 
-解码 protobuf 响应文件：
+## 代码生成
+
+安装 Go 代码生成工具：
 
 ```bash
-protoc -I api \
-  --decode=test.TestFieldsResponse \
-  api/test/test_api.proto < response.bin
+make install
 ```
+
+| 变更内容 | 命令 | 主要输出 |
+| --- | --- | --- |
+| `idl/` RPC 定义 | `make gen-kitex` | `kitex_gen/` |
+| Ent schema | `make gen-ent` | `internal/service/*/internal/data/ent/` |
+| Wire 依赖定义 | `make gen-wire` | `internal/**/wire_gen.go` |
+| `api/` HTTP 定义 | `make gen-hz` | `internal/gateway/model/`、`handler/`、`router/` |
+| 全部 Go 生成步骤（不含 Hertz） | `make gen` | Kitex、Ent、Wire 输出 |
+| 多语言 HTTP 客户端 | `make -C api gen-api-clients` | `generated/` |
+
+`make gen-hz` 会调用 `hz update`，生成文件中的逻辑可能被覆盖。应用自有的 `/ping`、`/test/*` 和 `/testjson/*` 注册在 `internal/gateway/router/router.go`，不应放入生成文件。修改协议后应提交对应的生成结果。
+
+## CI 与发布
+
+手动触发 `generate api clients` 工作流时，CI 会从指定源分支创建 `release-vX.Y.Z` 分支，执行 `make gen`、`make gen-hz` 和多语言客户端生成，再在该分支创建 tag。
+
+推送 `v*` tag 后，发布工作流会执行 lint、构建 Linux amd64 的 `work-demo` 二进制，并上传 `work-demo-<tag>-linux-amd64.tar.gz` 到 GitHub Release。
