@@ -11,6 +11,7 @@ install-go-tools:
 	go install github.com/cloudwego/hertz/cmd/hz@latest
 	go install github.com/google/wire/cmd/wire@latest
 	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.13.2
 
 gen: gen-kitex gen-ent gen-wire
 
