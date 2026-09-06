@@ -12,12 +12,12 @@ git add -f -- \
 
 # Ent-generated artifacts. Add new service outputs here.
 git add -f -- \
-  internal/service/user/data/ent \
-  internal/service/work/data/ent
+  internal/service/user/internal/data/ent \
+  internal/service/work/internal/data/ent
 
 # Wire-generated injectors. Add new service injectors here.
 git add -f -- \
-  cmd/gateway/wire_gen.go \
-  cmd/test/wire_gen.go \
-  cmd/user/wire_gen.go \
-  cmd/work/wire_gen.go
+  internal/gateway/wire_gen.go \
+  internal/service/test/wire_gen.go \
+  internal/service/user/wire_gen.go \
+  internal/service/work/wire_gen.go
