@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 
-	testpb "example.com/work-demo/internal/api/testapi"
+	testpb "example.com/work-demo/internal/gateway/model/testapi"
 )
 
 type Service struct{}

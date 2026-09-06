@@ -5,7 +5,7 @@ package testapi
 import (
 	"context"
 
-	testapi "example.com/work-demo/internal/api/testapi"
+	testapi "example.com/work-demo/internal/gateway/model/testapi"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
