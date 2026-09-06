@@ -23,10 +23,10 @@ gen-ent:
 	go run ./cmd/entgen
 
 gen-wire:
-	go run github.com/google/wire/cmd/wire gen ./cmd/gateway
-	go run github.com/google/wire/cmd/wire gen ./cmd/test
-	go run github.com/google/wire/cmd/wire gen ./cmd/user
-	go run github.com/google/wire/cmd/wire gen ./cmd/work
+	go run github.com/google/wire/cmd/wire gen ./internal/gateway
+	go run github.com/google/wire/cmd/wire gen ./internal/service/test
+	go run github.com/google/wire/cmd/wire gen ./internal/service/user
+	go run github.com/google/wire/cmd/wire gen ./internal/service/work
 
 gen-hz:
 	sh ./scripts/hz_gen.sh

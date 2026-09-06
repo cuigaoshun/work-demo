@@ -23,7 +23,7 @@ func ProvideTestClient(opts *Options) (registry.TestClient, error) {
 
 func ProvideTestJSONClient(opts *Options) (registry.TestJSONClient, error) {
 	provider, err := generic.NewPbFileProviderWithDynamicGo(
-		"idl/test/test.proto", context.Background(), dproto.Options{}, "idl", "api",
+		"api/test/test_api.proto", context.Background(), dproto.Options{}, "api",
 	)
 	if err != nil {
 		return nil, err
