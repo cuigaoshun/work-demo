@@ -25,7 +25,13 @@ func Proxy(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	c.Data(consts.StatusOK, "application/protobuf", response.([]byte))
+	protobufResponse, ok := response.([]byte)
+	if !ok {
+		c.String(consts.StatusBadGateway, "unexpected protobuf response type")
+		return
+	}
+
+	c.Data(consts.StatusOK, "application/protobuf", protobufResponse)
 }
 
 // ProxyJSON forwards JSON requests using the protobuf descriptor-backed generic client.
@@ -41,5 +47,11 @@ func ProxyJSON(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadGateway, err.Error())
 		return
 	}
-	c.Data(consts.StatusOK, "application/json", []byte(response.(string)))
+	jsonResponse, ok := response.(string)
+	if !ok {
+		c.String(consts.StatusBadGateway, "unexpected JSON response type")
+		return
+	}
+
+	c.Data(consts.StatusOK, "application/json", []byte(jsonResponse))
 }

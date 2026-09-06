@@ -1,13 +1,50 @@
+# golangci-lint v2 配置格式。
 version: "2"
 
 linters:
+  # 启用官方推荐的基础检查：errcheck、govet、staticcheck、unused 等。
   default: standard
   enable:
-    - gocritic
-    - misspell
-    - nilerr
+    - asciicheck # 检查标识符中是否包含非 ASCII 字符。
+    - bidichk # 检查危险的 Unicode 双向控制字符，防止源码视觉欺骗。
+    - bodyclose # 检查 HTTP 响应体是否关闭，避免连接和资源泄漏。
+    - containedctx # 检查结构体中直接保存 context.Context 的用法。
+    - contextcheck # 检查函数是否使用了未从父级继承的 Context。
+    - copyloopvar # 检查循环变量复制是否存在不必要或易出错的用法。
+    - decorder # 检查类型、常量、变量和函数的声明顺序。
+    - durationcheck # 检查两个 time.Duration 被相乘的可疑计算。
+    - embeddedstructfieldcheck # 检查嵌入字段在结构体中的位置和空行分隔。
+    - errcheck # 检查被忽略的 error 返回值。
+    - errchkjson # 检查 JSON 编解码函数的参数类型和可忽略错误。
+    - errname # 检查哨兵错误和错误类型的命名是否符合惯例。
+    - errorlint # 检查 Go 1.13 错误包装、errors.Is 和 errors.As 的错误用法。
+    - exhaustive # 检查枚举 switch 是否覆盖全部取值。
+    - forbidigo # 禁止使用团队不允许的标识符或函数。
+    - forcetypeassert # 检查未使用 ok 结果的强制类型断言。
+    - fatcontext # 检查循环或闭包中不断嵌套创建的 Context。
+    - funlen # 检查过长的函数。
+    - gochecknoinits # 检查并禁止使用 init 函数。
+    - gocritic # 检查常见的 Go 写法、可读性和潜在性能问题。
+    - gocyclo # 检查函数圈复杂度，提示过于复杂的控制流。
+    - gosec # 检查常见安全风险，例如弱随机数、文件权限和命令执行。
+    - ineffassign # 检查赋值后未被使用的变量值。
+    - intrange # 检查可使用整数 range 简化的 for 循环。
+    - misspell # 检查英文标识符、注释和字符串中的常见拼写错误。
+    - modernize # 建议使用现代 Go 语言和标准库特性简化代码。
+    - nilerr # 检查错误分支错误地返回 nil 的情况。
+    - nilnesserr # 检查 err 非 nil 时错误地返回其他 nil 错误值的情况。
+    - nilnil # 检查同时返回无效值和 nil error 的情况。
+    - nolintlint # 检查 nolint 指令是否规范且说明充分。
+    - perfsprint # 检查可替换为更快方案的 fmt.Sprintf 调用。
+    - prealloc # 建议在容量可预估时预分配 slice。
+    - unconvert # 检查无意义的显式类型转换。
+    - unparam # 检查未使用的函数参数。
+    - unused # 检查未使用的常量、变量、函数和类型。
+    - usestdlibvars # 检查可替换为 Go 标准库变量或常量的自定义值。
+    - wastedassign # 检查被覆盖且从未读取的无效赋值。
+    - whitespace # 检查多余空行和行尾空白。
 
 formatters:
   enable:
-    - gofmt
-    - goimports
+    - gofmt # 检查 Go 源文件是否符合 gofmt 格式。
+    - goimports # 检查 Go 格式和 import 分组、排序是否符合 goimports。
