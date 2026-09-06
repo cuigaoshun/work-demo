@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package sum;
 
-option go_package = "example.com/work-demo/internal/gateway/internal/model/sum";
+option go_package = "example.com/work-demo/internal/gateway/model/sum";
 
 import "api.proto";
 

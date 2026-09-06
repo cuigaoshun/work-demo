@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	workmodel "example.com/work-demo/internal/gateway/internal/model/work"
 	client "example.com/work-demo/internal/gateway/internal/registry"
+	workmodel "example.com/work-demo/internal/gateway/model/work"
 	userpb "example.com/work-demo/kitex_gen/user"
 	workpb "example.com/work-demo/kitex_gen/work"
 	"github.com/cloudwego/hertz/pkg/app"

@@ -28,11 +28,11 @@ internal/service/*/internal/data/ent/*
 !internal/service/*/internal/data/ent/schema/
 !internal/service/*/internal/data/ent/schema/**
 generated/
-internal/gateway/internal/model/*
+internal/gateway/model/*
 internal/api/*
 *.iml
 
 # Hertz generated route implementations; keep registration and middleware code.
-internal/gateway/internal/router/register.go
-internal/gateway/internal/router/*/*.go
-!internal/gateway/internal/router/*/middleware.go
+internal/gateway/router/register.go
+internal/gateway/router/*/*.go
+!internal/gateway/router/*/middleware.go

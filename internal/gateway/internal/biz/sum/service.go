@@ -3,7 +3,7 @@ package sum
 import (
 	"context"
 
-	sumpb "example.com/work-demo/internal/gateway/internal/model/sum"
+	sumpb "example.com/work-demo/internal/gateway/model/sum"
 )
 
 // Service contains the application logic for the local sum endpoint.
