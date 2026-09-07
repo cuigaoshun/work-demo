@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package test;
+package workdemo.api.test;
 
 option go_package = "example.com/work-demo/internal/gateway/model/testapi";
 
@@ -47,7 +47,7 @@ message TestFieldsResponse {
 // TestBindRequest 用于验证 Hertz 对 protobuf 二进制请求体的绑定。
 message TestBindRequest {
   int64 id = 1;
-  string name = 2 [(api.vd) = "len($) <= 20"];
+  string name = 2 [(workdemo.api.vd) = "len($) <= 20"];
 }
 
 // TestBindResponse 回传已绑定的请求字段。
@@ -73,6 +73,6 @@ message CompatibilityMessage {
 
 service TestService {
   rpc TestBind(TestBindRequest) returns (TestBindResponse) {
-    option (api.post) = "/testBind";
+    option (workdemo.api.post) = "/testBind";
   }
 }

@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package test;
+package workdemo.idl.test;
 
 option go_package = "example.com/work-demo/kitex_gen/test";
 
 import "test/test_api.proto";
 
 service TestService {
-  rpc TestFields(TestFieldsRequest) returns (TestFieldsResponse);
+  rpc TestFields(workdemo.api.test.TestFieldsRequest) returns (workdemo.api.test.TestFieldsResponse);
 }

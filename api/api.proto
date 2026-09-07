@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-package api;
+package workdemo.api;
 
 import "google/protobuf/descriptor.proto";
 

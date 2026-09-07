@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package work;
+package workdemo.idl.work;
 
 option go_package = "example.com/work-demo/kitex_gen/work";
 

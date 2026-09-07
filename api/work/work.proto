@@ -1,13 +1,13 @@
 syntax = "proto3";
 
-package work;
+package workdemo.api.work;
 
 option go_package = "example.com/work-demo/internal/gateway/model/work";
 
 import "api.proto";
 
 message GetWorkRequest {
-  int64 work_id = 1 [(api.path) = "workID"];
+  int64 work_id = 1 [(workdemo.api.path) = "workID"];
 }
 
 message GetWorkResponse {
@@ -23,6 +23,6 @@ message User {
 
 service WorkService {
   rpc GetWork(GetWorkRequest) returns (GetWorkResponse) {
-    option (api.get) = "/works/:workID";
+    option (workdemo.api.get) = "/works/:workID";
   }
 }
