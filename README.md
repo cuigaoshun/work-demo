@@ -155,19 +155,37 @@ curl -i -X POST http://127.0.0.1:8080/testBind \
 protobuf 二进制泛化调用可按下面方式构造和查看数据：
 
 ```bash
-protoc -I api --encode=test.TestFieldsRequest api/test/test_api.proto > scripts/request.bin <<'EOF'
+protoc -I api --encode=workdemo.api.test.TestFieldsRequest api/test/test_api.proto > scripts/request.bin <<'EOF'
 int32_value: -7
+uint32_value: 42
+int64_value: -7000000000
+uint64_value: 7000000000
+bool_value: true
 string_value: "compatibility"
 enum_value: COMPATIBILITY_ENUM_FIRST
+nested_value: {
+  label: "primary"
+  values: 10
+  values: 20
+  attributes: { key: "kind" value: 1 }
+  child: { label: "child" }
+}
 repeated_strings: "first"
 repeated_strings: "second"
+repeated_int32: 1
+repeated_int32: -2
+repeated_enums: COMPATIBILITY_ENUM_SECOND
+repeated_nested: { label: "item" values: 3 }
+string_map: { key: "region" value: "test" }
+numeric_map: { key: 7 value: 700 }
+nested_map: { key: "entry" value: { label: "mapped" attributes: { key: "score" value: 9 } } }
 EOF
 
 curl -X POST http://127.0.0.1:8080/test/TestFields \
   -H 'Content-Type: application/protobuf' \
   --data-binary @scripts/request.bin -o scripts/response.bin
 
-protoc -I api --decode=test.TestFieldsResponse api/test/test_api.proto < scripts/response.bin
+protoc -I api --decode=workdemo.api.test.TestFieldsResponse api/test/test_api.proto < scripts/response.bin
 ```
 
 ## 代码生成
