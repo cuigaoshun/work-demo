@@ -39,3 +39,5 @@ internal/gateway/router/*/*.go
 
 # Generated protobuf fixtures used by README examples
 scripts/*.bin
+# Locally generated golangci-lint binary with module plugins.
+custom-gcl

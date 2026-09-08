@@ -1,4 +1,4 @@
-.PHONY: install install-go-tools gen gen-kitex gen-ent gen-wire gen-hz custom-gcl lint
+.PHONY: install install-go-tools gen gen-kitex gen-ent gen-wire gen-hz lint
 
 KITEX ?= $(shell go env GOPATH)/bin/kitex
 HZ ?= $(shell go env GOPATH)/bin/hz
@@ -34,8 +34,8 @@ gen-wire:
 gen-hz:
 	sh ./scripts/hz_gen.sh
 
-custom-gcl:
+custom-gcl: .custom-gcl.yml Makefile
 	$(GOLANGCI_LINT) custom -v
 
-lint: custom-gcl
+lint:
 	$(CUSTOM_GOLANGCI_LINT) run
