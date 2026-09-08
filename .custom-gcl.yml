@@ -1,0 +1,6 @@
+version: v2.13.2
+name: custom-gcl
+
+plugins:
+  - module: github.com/cuigaoshun/golinter
+    version: v1.0.0
